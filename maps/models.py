@@ -10,13 +10,13 @@ class DefaultModel(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
 class Country(DefaultModel):
-    name = models.CharField(max_length=200)
+    name = models.CharField(max_length=200,unique=True,blank=False)
 
     def __unicode__(self):
         return self.name
 
 class County(DefaultModel):
-    name = models.CharField(max_length=200)
+    name = models.CharField(max_length=200,unique=True,blank=False)
 
     def __unicode__(self):
         return self.name
@@ -39,8 +39,9 @@ class CountryMap(DefaultModel):
         choices=BORDER_TYPE_CHOICES,
         default=PLAIN,
     )
-    country_represented = models.ForeignKey(Country)
+    name = models.CharField(max_length=200,unique=True,blank=False)
+    country_represented = models.ForeignKey(Country,  related_name='country_maps')
     map_json = JSONField(default="")
     
     def __unicode__(self):
-        return self.country_represented.name
+        return self.name
