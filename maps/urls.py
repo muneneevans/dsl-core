@@ -7,7 +7,9 @@ Country_api_urls = [
 
     url(r'^$', CountryListView.as_view(), name='country-list'),
 
-    url(r'^(?P<country_represented>[a-zA-Z0-9]+)/plain$', CountryPlainMapView.as_view(), name="country-plain-map"),
+    url(r'^kenya/county$', KenyaCountyMapView.as_view(), name='kenya-county-map'),
+
+    # url(r'^(?P<country_represented>[a-zA-Z0-9]+)/plain$', CountryPlainMapView.as_view(), name="country-plain-map"),
 ]
 
 
