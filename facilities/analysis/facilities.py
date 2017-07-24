@@ -1,4 +1,5 @@
 from common.analysis import connection
+from maps.analysis import counties, constituencies, wards
 import numpy as np
 import pandas as pd
 from pandas import DataFrame, Series
@@ -36,3 +37,33 @@ def get_facility_keph_levels_codes(in_json=False):
         return all_keph_levels.to_json(orient='records')
     else:
         return all_keph_levels
+
+
+#get all the facilities in a county
+def get_county_facilities(county_id, in_json=False):
+    conn = connection.get_connection()
+    county = counties.get_county_code_by_id(county_id)
+    
+    #get county_constituencies in the county
+    county_constituencies = constituencies.get_county_constituency_codes(county_id)
+    county_constituencies = county_constituencies.rename(index=str, columns={'id':'constituency_id', 'name': "constituency_name"})
+    
+    #get all the wards for the county
+    all_wards = wards.get_all_wards()
+    
+    #merge with the consitituencies
+    county_wards = pd.merge(all_wards,county_constituencies,on='constituency_id')
+    county_wards = county_wards.rename(index=str, columns={'id': 'ward_id', 'name': 'ward_name'})
+    
+    #get all facilieits and merge
+    all_facilities = DataFrame()
+    for chunk in pd.read_sql('SELECT * FROM facilities_facility', con=conn, chunksize=100):
+        all_facilities = all_facilities.append(chunk)
+    
+    
+    county_facilities = pd.merge(all_facilities,county_wards, on='ward_id')
+
+    if in_json:
+        return county_facilities.to_json(orient='records')
+    else:
+        return county_facilities
