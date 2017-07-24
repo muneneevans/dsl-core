@@ -1,7 +1,7 @@
 from rest_framework import generics
 from rest_framework.generics import CreateAPIView, ListCreateAPIView, RetrieveUpdateAPIView
 from django.http import HttpResponse, JsonResponse
-from analysis import counties, constituencies
+from analysis import counties, constituencies, wards
 from .serializers import *
 from .models import *
 
@@ -36,4 +36,10 @@ class CountyConstituencyList(generics.ListAPIView):
     def get(self, request, **kwargs):
         result = constituencies.get_county_constituency_codes_json(kwargs['county_id'])
         # result = 'consituency list'
+        return HttpResponse(result)
+
+class ConstituencyWardList(generics.ListAPIView):
+    def get(self, request, **kwargs):
+        result = wards.get_constituency_wards_ids_json(kwargs['constituency_id'])
+
         return HttpResponse(result)

@@ -24,6 +24,17 @@ def get_connection():
     except Exception:
         return Exception.message
 
+def get_constituency_by_id(constituency_id):
+    conn = connection.get_connection()
+    all_constituencies = DataFrame()
+
+    for chunk in pd.read_sql('SELECT * FROM common_constituency', con=conn, chunksize=100):
+        all_constituencies = all_constituencies.append(chunk)
+    
+    constituency = all_constituencies[all_constituencies['id']==constituency_id]
+
+    return constituency
+
 def get_county_constituency_codes_json(county_id):
     '''return codes for constituencies in county'''
     conn = connection.get_connection()
@@ -35,6 +46,6 @@ def get_county_constituency_codes_json(county_id):
     county = counties.get_county_code_by_id(county_id)
     county = county.rename(index=str, columns={"id": "county_id", 'name': 'county_name'})
     county_constituencies = pd.merge(all_constituencies,county, on='county_id')
-    county_constituencies = county_constituencies[['name','id']]
+    county_constituencies = county_constituencies[['name','id','county_id']]
     
     return county_constituencies.to_json(orient='records')

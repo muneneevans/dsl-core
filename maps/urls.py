@@ -21,10 +21,15 @@ county_api_urls=[
 
 ]
 
+constituency_api_urls=[
+
+    url(r'^(?P<constituency_id>[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89aAbB][a-f0-9]{3}-[a-f0-9]{12})/wards/$', ConstituencyWardList.as_view(), name='constituency-ward-list'),
+]
 
 
 api_urls = [
     url(r'^countries/', include(Country_api_urls)),
+    url(r'^constituencies/', include(constituency_api_urls)),
     url(r'^counties/', include(county_api_urls)),
 ]
 
