@@ -9,6 +9,16 @@ import os
 import psycopg2
 
 
+def get_all_wards():
+    '''return a dataframe of all wards'''
+    conn = connection.get_connection()
+    all_wards = DataFrame()
+
+    for chunk in pd.read_sql('SELECT * FROM common_ward', con=conn, chunksize=100):
+        all_wards = all_wards.append(chunk)
+
+    return all_wards 
+
 def get_constituency_wards_ids_json(constituency_id):
     '''return ids for wards in a constituency'''
     conn = connection.get_connection()
