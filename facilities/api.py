@@ -9,3 +9,7 @@ class FaciltyTypeListView(ListAPIView):
         result = facilities.get_facility_types_codes(True)
         return HttpResponse(result)
 
+class FacilityKephLevelsView(ListAPIView):
+    def get(self, request):
+        result = facilities.get_facility_keph_levels_codes(True)
+        return HttpResponse(result)
