@@ -20,5 +20,6 @@ from django.conf import settings
 urlpatterns = [
     url(r'^maps/', include('maps.urls')),     
     url(r'^facilities/', include('facilities.urls')),
+    url(r'^indicators/', include('indicators.urls')),
     url(r'^admin/', admin.site.urls),
 ]
