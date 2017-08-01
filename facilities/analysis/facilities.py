@@ -86,13 +86,30 @@ def get_constituency_facilities(constituency_id, in_json=False):
 
     #get all wards in the constituency
     constituency_wards = wards.get_constituency_wards(constituency_id)
+    constituency_wards = constituency_wards.rename(index=str, columns={'id':'ward_id', 'name':'ward_name'})
     #get all facilities
     all_facilities = get_all_facilities()
 
     constituency_facilities = pd.merge(all_facilities,constituency_wards, on='ward_id')
-    county_facilities = county_facilities[['id','name','official_name','number_of_beds','number_of_cots','approved' ,'facility_type_id','keph_level_id','ward_id']]
+    constituency_facilities = constituency_facilities[['id','name','official_name','number_of_beds','number_of_cots','approved' ,'facility_type_id','keph_level_id','ward_id']]
 
     if in_json:
-        return county_facilities.to_json(orient='records')
+        return constituency_facilities.to_json(orient='records')
     else:
-        return county_facilities
+        return constituency_facilities
+
+
+#get all the facilities in a ward
+def get_ward_facilities(ward_id, in_json=False):
+    '''return facilities if given a ward id'''
+    ward = wards.get_ward_by_id(ward_id)
+    all_facilities = get_all_facilities()
+
+    ward = ward.rename(index=str, columns={'id':'ward_id','name':'ward_name'})
+    ward_facilities = pd.merge(all_facilities, ward, on='ward_id')
+    ward_facilities = ward_facilities[['id','name','official_name','number_of_beds','number_of_cots','approved' ,'facility_type_id','keph_level_id','ward_id']]
+
+    if in_json:
+        return ward_facilities.to_json(orient='records')
+    else:
+        return ward_facilities
