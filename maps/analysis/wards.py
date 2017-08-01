@@ -39,7 +39,7 @@ def get_constituency_wards_ids_json(constituency_id):
 
     return constituency_wards.to_json(orient='records')
 
-def get_constituency_wards(constituency_id):
+def get_constituency_wards(constituency_id, in_json=False):
     '''return ids for wards in a constituency'''
     conn = connection.get_connection()
     all_wards = DataFrame()
@@ -57,4 +57,18 @@ def get_constituency_wards(constituency_id):
     constituency_wards = pd.merge(all_wards,constituency, on='constituency_id')
     constituency_wards = constituency_wards[['name','id','constituency_id']]
 
-    return constituency_wards(orient='records')
+    if in_json:
+        return constituency_wards.to_json(orient='records')
+    else:
+        return constituency_wards
+
+def get_ward_by_id(ward_id, in_json=False):
+    '''return a ward with the given id provided'''    
+    all_wards = get_all_wards()
+
+    ward = all_wards[all_wards['id'] == ward_id]
+
+    if in_json:
+        return ward.to_json(orient='records')
+    else:
+        return ward
