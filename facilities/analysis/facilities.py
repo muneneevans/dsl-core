@@ -38,6 +38,16 @@ def get_facility_keph_levels_codes(in_json=False):
     else:
         return all_keph_levels
 
+#get all facilities
+def get_all_facilities():
+    conn = connection.get_connection()
+
+    #get all facilieits and merge
+    all_facilities = DataFrame()
+    for chunk in pd.read_sql('SELECT * FROM facilities_facility', con=conn, chunksize=100):
+        all_facilities = all_facilities.append(chunk)
+
+    return all_facilities
 
 #get all the facilities in a county
 def get_county_facilities(county_id, in_json=False):
@@ -62,6 +72,25 @@ def get_county_facilities(county_id, in_json=False):
     
     
     county_facilities = pd.merge(all_facilities,county_wards, on='ward_id')
+    county_facilities = county_facilities[['id','name','official_name','number_of_beds','number_of_cots','approved' ,'facility_type_id','keph_level_id','ward_id']]
+
+    if in_json:
+        return county_facilities.to_json(orient='records')
+    else:
+        return county_facilities
+
+#get all the facilities in a constituency
+def get_constituency_facilities(constituency_id, in_json=False):
+    conn = connection.get_connection()
+    constituency = constituencies.get_constituency_by_id(constituency_id)
+
+    #get all wards in the constituency
+    constituency_wards = wards.get_constituency_wards(constituency_id)
+    #get all facilities
+    all_facilities = get_all_facilities()
+
+    constituency_facilities = pd.merge(all_facilities,constituency_wards, on='ward_id')
+    county_facilities = county_facilities[['id','name','official_name','number_of_beds','number_of_cots','approved' ,'facility_type_id','keph_level_id','ward_id']]
 
     if in_json:
         return county_facilities.to_json(orient='records')
