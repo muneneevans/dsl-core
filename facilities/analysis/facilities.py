@@ -72,7 +72,7 @@ def get_county_facilities(county_id, in_json=False):
     
     
     county_facilities = pd.merge(all_facilities,county_wards, on='ward_id')
-    county_facilities = county_facilities[['id','name','official_name','number_of_beds','number_of_cots','approved' ,'facility_type_id','keph_level_id','ward_id']]
+    county_facilities = county_facilities[['id','name','official_name','number_of_beds','number_of_cots','approved' ,'facility_type_id','keph_level_id','ward_id', 'constituency_id','constituency_name']]
 
     if in_json:
         return county_facilities.to_json(orient='records')
@@ -113,3 +113,17 @@ def get_ward_facilities(ward_id, in_json=False):
         return ward_facilities.to_json(orient='records')
     else:
         return ward_facilities
+
+#get county summaries
+def get_county_summary(county_id, in_json=False):
+    '''return a summary of beds and cots per county'''
+    county_facilities = get_county_facilities(county_id)
+    
+    county_facilities['number_of_facilities'] = 1
+    county_summary = county_facilities.groupby(['constituency_id','constituency_name'],as_index=False).sum()[
+        ['number_of_beds','number_of_cots','number_of_facilities','constituency_id','constituency_name']]
+    
+    if in_json:
+        return county_summary.to_json(orient='records')
+    else:
+        return county_summary
