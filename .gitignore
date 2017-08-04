@@ -1,7 +1,3 @@
-boa/settings.py
-
-
 *.pyc
 !spec/*.pyc
 
-boa/settings.py
