@@ -50,17 +50,17 @@ def get_county_constituency_codes_json(county_id):
     
     return county_constituencies.to_json(orient='records')
 
-def get_county_constituency_codes(county_id):
+def get_county_constituency_codes(county_id, in_json=False):
     '''return codes for constituencies in county'''
     conn = connection.get_connection()
     all_constituencies = DataFrame()
 
-    for chunk in pd.read_sql('SELECT * FROM common_constituency', con=conn, chunksize=100):
-        all_constituencies = all_constituencies.append(chunk)
-    
-    county = counties.get_county_code_by_id(county_id)
-    county = county.rename(index=str, columns={"id": "county_id", 'name': 'county_name'})
-    county_constituencies = pd.merge(all_constituencies,county, on='county_id')
-    county_constituencies = county_constituencies[['name','id','county_id']]
-    
-    return county_constituencies
+    query = "SELECT * FROM common_constituency WHERE county_id = '%s' ;" %(county_id)   
+    for chunk in pd.read_sql(query, con=conn, chunksize=1000):
+        all_constituencies = all_constituencies.append(chunk)        
+
+    all_constituencies = all_constituencies[['name','id','county_id']]
+    if in_json:
+        return all_constituencies.to_json(orient='records')
+    else:
+        return all_constituencies
