@@ -29,6 +29,11 @@ class ConstituencyFacilities(ListAPIView):
         response = facilities.get_constituency_facilities(kwargs['constituency_id'], True)
         return HttpResponse(response)
 
+class ConstituencySummary(ListAPIView):
+    def get(self, request, **kwargs):
+        response = facilities.get_constituency_summary(kwargs['constituency_id'], True)
+        return HttpResponse(response)
+
 class WardFacilities(ListAPIView):
     def get(self, request, **kwargs):
         response = facilities.get_ward_facilities(kwargs['ward_id'], True)

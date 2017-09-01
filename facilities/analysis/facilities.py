@@ -49,70 +49,72 @@ def get_all_facilities():
 
     return all_facilities
 
+#get all the facilities in a ward
+def get_ward_facilities(ward_id, in_json=False):
+    '''return ids for facilities in a ward'''
+    conn = connection.get_connection()
+    all_facilities = DataFrame()
+    
+    query = "SELECT * FROM facilities_facility WHERE ward_id = '%s' ;" %(ward_id)
+    for chunk in pd.read_sql(query, con=conn, chunksize=100):
+        all_facilities = all_facilities.append(chunk)
+
+    if in_json:
+        return all_facilities.to_json(orient='records')
+    else:
+        return all_facilities
+
+#get facilities in ward
+def get_constituency_facilities(constituency_id, in_json=False):
+    conn = connection.get_connection()
+    #get all the wards for the county
+    all_wards = wards.get_constituency_wards(constituency_id)   
+    
+    all_facilities = DataFrame()
+    for index, ward in all_wards.iterrows():
+        all_facilities = all_facilities.append(get_ward_facilities(ward['id']))
+            
+    if in_json:
+        return all_facilities.to_json(orient='records')
+    else:
+        return all_facilities
+
 #get all the facilities in a county
 def get_county_facilities(county_id, in_json=False):
     conn = connection.get_connection()
     county = counties.get_county_code_by_id(county_id)
     
-    #get county_constituencies in the county
+    #get constituencies in the county
     county_constituencies = constituencies.get_county_constituency_codes(county_id)
     county_constituencies = county_constituencies.rename(index=str, columns={'id':'constituency_id', 'name': "constituency_name"})
     
     #get all the wards for the county
-    all_wards = wards.get_all_wards()
+    all_wards = DataFrame()
+    for index, constituency in county_constituencies.iterrows():        
+        all_wards = all_wards.append(wards.get_constituency_wards(constituency['constituency_id']) )    
     
-    #merge with the consitituencies
-    county_wards = pd.merge(all_wards,county_constituencies,on='constituency_id')
-    county_wards = county_wards.rename(index=str, columns={'id': 'ward_id', 'name': 'ward_name'})
-    
-    #get all facilieits and merge
     all_facilities = DataFrame()
-    for chunk in pd.read_sql('SELECT * FROM facilities_facility', con=conn, chunksize=100):
-        all_facilities = all_facilities.append(chunk)
+    for index, ward in all_wards.iterrows():
+        all_facilities = all_facilities.append(get_ward_facilities(ward['id']))
+            
+    if in_json:
+        return all_facilities.to_json(orient='records')
+    else:
+        return all_facilities
+
+#get constituency summaries
+def get_constituency_summary(constituency_id, in_json=False):
+    '''return a summary of beds and cots per county'''
+    constituency_facilities = get_constituency_facilities(constituency_id)
     
-    
-    county_facilities = pd.merge(all_facilities,county_wards, on='ward_id')
-    county_facilities = county_facilities[['id','name','official_name','number_of_beds','number_of_cots','approved' ,'facility_type_id','keph_level_id','ward_id', 'constituency_id','constituency_name']]
+    constituency_facilities['number_of_facilities'] = 1
+    constituency_summary = constituency_facilities.groupby(['ward_id'],as_index=False).sum()[
+        ['number_of_beds','number_of_cots','number_of_facilities','ward_id']]
 
     if in_json:
-        return county_facilities.to_json(orient='records')
+        return constituency_summary.to_json(orient='records')
     else:
-        return county_facilities
-
-#get all the facilities in a constituency
-def get_constituency_facilities(constituency_id, in_json=False):
-    conn = connection.get_connection()
-    constituency = constituencies.get_constituency_by_id(constituency_id)
-
-    #get all wards in the constituency
-    constituency_wards = wards.get_constituency_wards(constituency_id)
-    constituency_wards = constituency_wards.rename(index=str, columns={'id':'ward_id', 'name':'ward_name'})
-    #get all facilities
-    all_facilities = get_all_facilities()
-
-    constituency_facilities = pd.merge(all_facilities,constituency_wards, on='ward_id')
-    constituency_facilities = constituency_facilities[['id','name','official_name','number_of_beds','number_of_cots','approved' ,'facility_type_id','keph_level_id','ward_id']]
-
-    if in_json:
-        return constituency_facilities.to_json(orient='records')
-    else:
-        return constituency_facilities
-
-
-#get all the facilities in a ward
-def get_ward_facilities(ward_id, in_json=False):
-    '''return facilities if given a ward id'''
-    ward = wards.get_ward_by_id(ward_id)
-    all_facilities = get_all_facilities()
-
-    ward = ward.rename(index=str, columns={'id':'ward_id','name':'ward_name'})
-    ward_facilities = pd.merge(all_facilities, ward, on='ward_id')
-    ward_facilities = ward_facilities[['id','name','official_name','number_of_beds','number_of_cots','approved' ,'facility_type_id','keph_level_id','ward_id']]
-
-    if in_json:
-        return ward_facilities.to_json(orient='records')
-    else:
-        return ward_facilities
+        return constituency_summary
 
 #get county summaries
 def get_county_summary(county_id, in_json=False):
@@ -126,8 +128,9 @@ def get_county_summary(county_id, in_json=False):
     if in_json:
         return county_summary.to_json(orient='records')
     else:
-        return county_summary
 
+        return county_summary
+    
 #get a specific facility
 def get_facility_by_id(facility_id, in_json=False):
     '''returns a facility matching the facility id '''
