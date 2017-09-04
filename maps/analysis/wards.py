@@ -44,27 +44,29 @@ def get_constituency_wards(constituency_id, in_json=False):
     '''return ids for wards in a constituency'''
     conn = connection.get_connection()
     all_wards = DataFrame()
+    constituency = constituencies.get_constituency_by_id(constituency_id)
     
     query = "SELECT * FROM common_ward WHERE constituency_id = '%s' ;" %(constituency_id)
     for chunk in pd.read_sql(query, con=conn, chunksize=100):
         all_wards = all_wards.append(chunk)
     
+    all_wards['constituency_name'] = constituency['name']
+    all_wards = all_wards[['name','id','constituency_id', 'constituency_name']]
 
-    all_wards = all_wards[['name','id','constituency_id']]
-
-    return all_wards
     if in_json:
         return all_wards.to_json(orient='records')
     else:
         return all_wards
 
 def get_ward_by_id(ward_id, in_json=False):
-    '''return a ward with the given id provided'''    
-    all_wards = get_all_wards()
-
-    ward = all_wards[all_wards['id'] == ward_id]
+    conn = connection.get_connection()
+    all_wards = pd.DataFrame()
+    query = "SELECT * FROM common_ward WHERE id = '%s' ;" %(ward_id)   
+    wards =pd.read_sql(query, con=conn, chunksize=10, index_col='id')
+    for chunk in wards:
+        all_wards = all_wards.append(chunk)
 
     if in_json:
-        return ward.to_json(orient='records')
+        return all_wards.head(1).to_json(orient='records')
     else:
-        return ward
+        return all_wards.head(1)

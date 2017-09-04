@@ -26,14 +26,16 @@ def get_connection():
 
 def get_constituency_by_id(constituency_id):
     conn = connection.get_connection()
-    all_constituencies = DataFrame()
-
-    for chunk in pd.read_sql('SELECT * FROM common_constituency', con=conn, chunksize=100):
+    all_constituencies = pd.DataFrame()
+    query = "SELECT * FROM common_constituency WHERE id = '%s' ;" %(constituency_id)   
+    for chunk in pd.read_sql(query, con=conn, chunksize=100,index_col='id'):
         all_constituencies = all_constituencies.append(chunk)
-    
-    constituency = all_constituencies[all_constituencies['id']==constituency_id]
 
-    return constituency
+    # all_constituencies = all_constituencies[all_constituencies['id']==constituency_id]
+    # import pdb
+    # pdb.set_trace()
+    
+    return all_constituencies.head(1)
 
 def get_county_constituency_codes_json(county_id):
     '''return codes for constituencies in county'''
@@ -54,12 +56,15 @@ def get_county_constituency_codes(county_id, in_json=False):
     '''return codes for constituencies in county'''
     conn = connection.get_connection()
     all_constituencies = DataFrame()
+    county = counties.get_county_code_by_id(county_id)
 
     query = "SELECT * FROM common_constituency WHERE county_id = '%s' ;" %(county_id)   
     for chunk in pd.read_sql(query, con=conn, chunksize=1000):
         all_constituencies = all_constituencies.append(chunk)        
 
-    all_constituencies = all_constituencies[['name','id','county_id']]
+    all_constituencies['county_name'] = county['name']    
+    all_constituencies = all_constituencies[['name','id','county_id', 'county_name']]
+
     if in_json:
         return all_constituencies.to_json(orient='records')
     else:
