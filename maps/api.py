@@ -5,7 +5,7 @@ from analysis import counties, constituencies, wards
 from .serializers import *
 from .models import *
 
-import maps_data_analysis
+# import maps_data_analysis
 
 class CountryListView(generics.ListAPIView):
     model = Country
@@ -19,11 +19,11 @@ class CountryPlainMapView(generics.RetrieveAPIView):
     serializer_class = CountryMapInlineSerializer
     lookup_field = 'country_represented'
 
-class KenyaCountyMapView(generics.ListAPIView):
-    def get(self, request):
-        result = maps_data_analysis.get_kenya_county_map()
+# class KenyaCountyMapView(generics.ListAPIView):
+#     def get(self, request):
+#         result = maps_data_analysis.get_kenya_county_map()
 
-        return JsonResponse(result)
+        # return JsonResponse(result)
 
 class KenyaCountyList(generics.ListAPIView):
     def get(self, request):

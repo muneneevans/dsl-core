@@ -79,15 +79,16 @@ def get_ward_facilities(ward_id, in_json=False):
 def get_constituency_facilities(constituency_id, in_json=False):
     conn = connection.get_connection()
     #get all the wards for the county
-    all_wards = wards.get_constituency_wards(constituency_id)   
     constituency = constituencies.get_constituency_by_id(constituency_id)
 
+    #get all the wards for the constituency
+    all_wards = wards.get_constituency_wards(constituency_id) 
+    
     all_facilities = DataFrame()
     for index, ward in all_wards.iterrows():
         all_facilities = all_facilities.append(get_ward_facilities(ward['id']))
-    
-    all_facilities['constituency_name'] = constituency['name']
-    all_facilities['constituency_id'] = constituency['id']
+             
+
     if in_json:
         return all_facilities.to_json(orient='records')
     else:
@@ -128,6 +129,7 @@ def get_constituency_summary(constituency_id, in_json=False):
     constituency_summary = constituency_facilities.groupby(['ward_id'],as_index=False).sum()[
         ['number_of_beds','number_of_cots','number_of_facilities','ward_id']]
 
+    
     if in_json:
         return constituency_summary.to_json(orient='records')
     else:
