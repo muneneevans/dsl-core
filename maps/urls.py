@@ -13,7 +13,7 @@ Country_api_urls = [
 
 county_api_urls=[
 
-    url(r'^map$', KenyaCountyMapView.as_view(), name='kenya-county-map'),
+    # url(r'^map$', KenyaCountyMapView.as_view(), name='kenya-county-map'),
 
     url(r'^list$', KenyaCountyList.as_view(), name='kenya-county-list'),
 
