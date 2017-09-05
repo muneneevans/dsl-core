@@ -38,3 +38,8 @@ class WardFacilities(ListAPIView):
     def get(self, request, **kwargs):
         response = facilities.get_ward_facilities(kwargs['ward_id'], True)
         return HttpResponse(response)
+
+class WardSummary(ListAPIView):
+    def get(self, request, **kwargs):
+        response = facilities.get_ward_summary(kwargs['ward_id'], True)
+        return HttpResponse(response)

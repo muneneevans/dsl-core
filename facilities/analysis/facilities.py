@@ -120,15 +120,27 @@ def get_county_facilities(county_id, in_json=False):
     else:
         return all_facilities
 
+
+#get ward summaries
+def get_ward_summary(ward_id, in_json=False):
+    '''return a summary of facilities in  ward'''
+    ward_facilities = get_ward_facilities(ward_id)
+
+    ward_facilities['number_of_facilities'] = 1
+    ward_summary = ward_facilities.groupby(['id','name'], as_index=False).sum()[
+        ['number_of_beds','number_of_cots','number_of_facilities','id','name']]
+    
+    if in_json:
+        return ward_summary.to_json(orient='records')
+    else:
+        return ward_summary
+
 #get constituency summaries
 def get_constituency_summary(constituency_id, in_json=False):
     '''return a summary of beds and cots per county'''
     constituency_facilities = get_constituency_facilities(constituency_id)
     
     constituency_facilities['number_of_facilities'] = 1
-
-    # import pdb
-    # pdb.set_trace()
     constituency_summary = constituency_facilities.groupby(['ward_id','ward_name'],as_index=False).sum()[
         ['number_of_beds','number_of_cots','number_of_facilities','ward_id','ward_name']]
 
