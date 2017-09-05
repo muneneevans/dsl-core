@@ -56,20 +56,20 @@ def get_ward_facilities(ward_id, in_json=False):
     all_facilities = DataFrame()
     ward = wards.get_ward_by_id(ward_id)
     constituency = constituencies.get_constituency_by_id(ward['constituency_id'].values[0])
-
     county = counties.get_county_code_by_id(constituency['county_id'].values[0])
+
 
     query = "SELECT * FROM facilities_facility WHERE ward_id = '%s' ;" %(ward_id)
     for chunk in pd.read_sql(query, con=conn, chunksize=100):
         all_facilities = all_facilities.append(chunk)
     
-    # import pdb
-    # pdb.set_trace()
-    all_facilities['ward_name'] = ward['name']
-    all_facilities['constituency_name'] = constituency['name'].values[0]
-    all_facilities['constituency_id'] = constituency.index.values[0]
-    all_facilities['county_name'] = county['name'].values[0]
-    all_facilities['county_id'] = county.index.values[0]
+    all_facilities['ward_name'] = ward['ward_name'][0]
+    all_facilities['constituency_name'] = constituency['name'][0]
+    all_facilities['constituency_id'] = constituency['id'][0]
+    all_facilities['county_name'] = county['name'][0]
+    all_facilities['county_id'] = county['id'][0]
+
+
     if in_json:
         return all_facilities.to_json(orient='records')
     else:
@@ -126,8 +126,11 @@ def get_constituency_summary(constituency_id, in_json=False):
     constituency_facilities = get_constituency_facilities(constituency_id)
     
     constituency_facilities['number_of_facilities'] = 1
-    constituency_summary = constituency_facilities.groupby(['ward_id'],as_index=False).sum()[
-        ['number_of_beds','number_of_cots','number_of_facilities','ward_id']]
+
+    # import pdb
+    # pdb.set_trace()
+    constituency_summary = constituency_facilities.groupby(['ward_id','ward_name'],as_index=False).sum()[
+        ['number_of_beds','number_of_cots','number_of_facilities','ward_id','ward_name']]
 
     
     if in_json:

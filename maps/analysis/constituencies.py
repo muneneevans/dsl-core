@@ -28,7 +28,7 @@ def get_constituency_by_id(constituency_id):
     conn = connection.get_connection()
     all_constituencies = pd.DataFrame()
     query = "SELECT * FROM common_constituency WHERE id = '%s' ;" %(constituency_id)   
-    for chunk in pd.read_sql(query, con=conn, chunksize=100,index_col='id'):
+    for chunk in pd.read_sql(query, con=conn, chunksize=100):
         all_constituencies = all_constituencies.append(chunk)
 
     # all_constituencies = all_constituencies[all_constituencies['id']==constituency_id]

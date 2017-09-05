@@ -62,11 +62,16 @@ def get_ward_by_id(ward_id, in_json=False):
     conn = connection.get_connection()
     all_wards = pd.DataFrame()
     query = "SELECT * FROM common_ward WHERE id = '%s' ;" %(ward_id)   
-    wards =pd.read_sql(query, con=conn, chunksize=10, index_col='id')
+    wards =pd.read_sql(query, con=conn, chunksize=10)
     for chunk in wards:
         all_wards = all_wards.append(chunk)
+  
+    ward = DataFrame([], columns=['ward_id','ward_name'])
+    ward.loc[0,'ward_id'] = all_wards['id'][0]  
+    ward.loc[0,'ward_name'] = all_wards['name'][0]  
+    ward.loc[0,'constituency_id'] = all_wards['constituency_id'][0]  
 
     if in_json:
-        return all_wards.head(1).to_json(orient='records')
+        return ward.to_json(orient='records')
     else:
-        return all_wards.head(1)
+        return ward
