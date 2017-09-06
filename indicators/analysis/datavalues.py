@@ -45,6 +45,7 @@ def get_facility_dataelement_datavalues(dataelement_id, facility_id, in_json=Fal
     for chunk in pd.read_sql(query, con=conn , chunksize=10000):
         all_datavalues = all_datavalues.append(chunk)
     
+    all_datavalues['value'] = all_datavalues['value'].astype(int)
     if in_json:
         return all_datavalues.to_json(orient='records')
     else:
