@@ -5,9 +5,9 @@ from analysis import dataelements, datavalues
 
 class DataElementsListView(ListAPIView):
     def get(self, request):
-        result = dataelements.get_all_dataelements(True)
+        response = dataelements.get_all_dataelements(True)
 
-        return HttpResponse(result)
+        return HttpResponse(response)
 
 class DataElementDetailView(ListAPIView):
     def get(self, request, **kwargs):
