@@ -170,13 +170,13 @@ def get_facility_by_id(facility_id, in_json=False):
     '''returns a facility matching the facility id '''
     conn = connection.get_connection()
     all_facilities = pd.DataFrame()
-    query = "SELECT name, code FROM facilities_facility WHERE id = '%s' ;" %(facility_id)    
+    query = "SELECT * FROM facilities_facility WHERE id = '%s' ;" %(facility_id)    
     for chunk in pd.read_sql(query, con=conn, chunksize=10000):
         all_facilities = all_facilities.append(chunk)
 
-    facility = all_facilities.head(1)
+    facility= all_facilities.head(1)
 
     if in_json:
-        return facility.to_json(oreint='records')
+        return facility.to_json(orient='records')
     else:
         return facility

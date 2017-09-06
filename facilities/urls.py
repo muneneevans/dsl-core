@@ -13,6 +13,8 @@ facility_urls = [
     url(r'^constituency/(?P<constituency_id>[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89aAbB][a-f0-9]{3}-[a-f0-9]{12})/summary/$',ConstituencySummary.as_view(), name='constituency-summary'),
     url(r'^ward/(?P<ward_id>[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89aAbB][a-f0-9]{3}-[a-f0-9]{12})/facilities/$',WardFacilities.as_view(), name='ward-facilities'),
     url(r'^ward/(?P<ward_id>[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89aAbB][a-f0-9]{3}-[a-f0-9]{12})/summary/$',WardSummary.as_view(), name='ward-summary'),
+    url(r'^(?P<facility_id>[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89aAbB][a-f0-9]{3}-[a-f0-9]{12})/$',FacilityDetails.as_view(), name='ward-summary'),
+
 ]
 
 urlpatterns = [

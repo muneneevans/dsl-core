@@ -4,6 +4,11 @@ from analysis import facilities
 from django.http import HttpResponse, JsonResponse
 
 
+class FacilityDetails(ListAPIView):
+    def get(self, request, **kwargs):
+        response = facilities.get_facility_by_id(kwargs['facility_id'], True)
+        return HttpResponse(response)
+    
 class FaciltyTypeListView(ListAPIView):
     def get(self, request ):
         result = facilities.get_facility_types_codes(True)
