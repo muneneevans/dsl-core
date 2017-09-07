@@ -1,6 +1,6 @@
 from rest_framework.generics import ListAPIView
 from django.http import HttpResponse, JsonResponse
-from analysis import dataelements, datavalues
+from analysis import dataelements, datavalues, category_option_combos
 
 
 class DataElementsListView(ListAPIView):
@@ -26,4 +26,15 @@ class FacilityDataElementDataValues(ListAPIView):
     def get(self, request, **kwargs):
         response = datavalues.get_facility_dataelement_datavalues(kwargs['dataelement_id'],kwargs['facility_id'], True)
 
+        return HttpResponse(response)
+
+class CategoryOptionCombos(ListAPIView):
+    def get(self, request):
+        response = category_option_combos.get_all_category_option_combos(True)
+
+        return HttpResponse(response)
+
+class CategoryOptionComboDetailView(ListAPIView):
+    def get(self, request, **kwargs):
+        response = category_option_combos.get_category_option_combo_by_id(kwargs['category_option_combo_id'],True)
         return HttpResponse(response)
