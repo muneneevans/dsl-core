@@ -50,7 +50,7 @@ def get_all_facilities():
     return all_facilities
 
 #get all the facilities in a ward
-def get_ward_facilities(ward_id, in_json=False):
+def get_ward_facilities(ward_id, in_json=False, filters=None):
     '''return ids for facilities in a ward'''
     conn = connection.get_connection()
     all_facilities = DataFrame()
@@ -62,6 +62,11 @@ def get_ward_facilities(ward_id, in_json=False):
     query = "SELECT * FROM facilities_facility WHERE ward_id = '%s' ;" %(ward_id)
     for chunk in pd.read_sql(query, con=conn, chunksize=100):
         all_facilities = all_facilities.append(chunk)
+    
+    if filters:
+        for key, value in filters.iteritems():            
+            all_facilities = all_facilities[all_facilities[key] == value]
+
     
     all_facilities['ward_name'] = ward['ward_name'][0]
     all_facilities['constituency_name'] = constituency['name'][0]
@@ -76,7 +81,7 @@ def get_ward_facilities(ward_id, in_json=False):
         return all_facilities
 
 #get facilities in ward
-def get_constituency_facilities(constituency_id, in_json=False):
+def get_constituency_facilities(constituency_id, in_json=False, filters=None):
     conn = connection.get_connection()
     #get all the wards for the county
     constituency = constituencies.get_constituency_by_id(constituency_id)
@@ -86,7 +91,7 @@ def get_constituency_facilities(constituency_id, in_json=False):
     
     all_facilities = DataFrame()
     for index, ward in all_wards.iterrows():
-        all_facilities = all_facilities.append(get_ward_facilities(ward['id']))
+        all_facilities = all_facilities.append(get_ward_facilities(ward['id'],filters=filters))
              
 
     if in_json:
@@ -164,7 +169,27 @@ def get_county_summary(county_id, in_json=False):
     else:
 
         return county_summary
+
+def get_country_summary(in_json=False):
+    '''return a summary of beds cots and facilities for all counties'''
+    all_counties = counties.get_all_counties()
+    country_facilities = DataFrame()
+
+    # import pdb
+    # pdb.set_trace()
+
+    for columns, county in all_counties.iterrows():
+        country_facilities.append(get_county_facilities(county.id))
     
+    country_facilities['number_of_facilities']= 1
+    country_summary = country_facilities.groupby(['county_id', 'county_name'], as_index=False).sum()[
+        ['number_of_beds','number_of_cots','number_of_facilities','county_id','county_name']] 
+
+    if in_json:
+        return country_summary.to_json(orient='records')
+    else:
+        return country_summary
+
 #get a specific facility
 def get_facility_by_id(facility_id, in_json=False):
     '''returns a facility matching the facility id '''

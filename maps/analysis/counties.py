@@ -44,3 +44,17 @@ def get_county_codes():
     all_counties = all_counties[['name','id']]
     return all_counties.to_json(orient='records')
     # return all_counties.to_json(orient='records')
+
+
+def get_all_counties(in_json=False):
+    ''' returns a dataframe of all counties '''
+    conn = get_connection()
+    all_counties = pd.DataFrame()
+    for chunk in pd.read_sql('SELECT * FROM common_county', con=conn, chunksize=1000):
+        all_counties = all_counties.append(chunk)
+
+    if in_json:
+        return all_counties.to_json(orient='records')
+    else:
+        return all_counties
+    
