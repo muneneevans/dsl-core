@@ -174,7 +174,7 @@ def get_country_summary(in_json=False):
     '''return a summary of beds cots and facilities for all counties'''
     conn = connection.get_connection()
     country_summary = pd.DataFrame()
-    query = '''SELECT  common_county.id AS county_id, COUNT(facilities_facility.id)
+    query = '''SELECT  common_county.id AS county_id, COUNT(facilities_facility.id) as number_of_facilities , SUM(number_of_beds) AS number_of_beds, SUM(number_of_cots) AS number_of_cots
         FROM facilities_facility , common_ward , common_constituency , common_county 
         WHERE facilities_facility.ward_id = common_ward.id 
             AND common_ward.constituency_id = common_constituency.id 
