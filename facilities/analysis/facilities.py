@@ -201,11 +201,11 @@ def get_country_facility_type_summary(in_json=False):
             AND common_ward.constituency_id = common_constituency.id
             AND facilities_facilitytype.id = facilities_facility.facility_type_id
             AND common_constituency.county_id = common_county.id'''
-    all_facility_types = pd.read_sql(facility_types_query, con=conn).groupby(['county_name','facility_type_name']).count().unstack().T.fillna(0).xs('count', axis=0, drop_level=True)
+    all_facility_types = pd.read_sql(facility_types_query, con=conn).groupby(['county_name','facility_type_name']).count().unstack().T.fillna(0).xs('count', axis=0, drop_level=True).T
     
     
     if in_json:
-        return all_facility_types.to_json(orient='columns')
+        return all_facility_types.to_json(orient='table')
     else:
         return all_facility_types
 
