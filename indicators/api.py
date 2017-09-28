@@ -1,6 +1,6 @@
 from rest_framework.generics import ListAPIView
 from django.http import HttpResponse, JsonResponse
-from analysis import dataelements, datavalues, category_option_combos
+from analysis import dataelements, datavalues, category_option_combos, periods
 
 
 class DataElementsListView(ListAPIView):
@@ -37,4 +37,9 @@ class CategoryOptionCombos(ListAPIView):
 class CategoryOptionComboDetailView(ListAPIView):
     def get(self, request, **kwargs):
         response = category_option_combos.get_category_option_combo_by_id(kwargs['category_option_combo_id'],True)
+        return HttpResponse(response)
+
+class PeriodsListView(ListAPIView):
+    def get(self, request, **kwargs):
+        response = periods.get_year_periods(kwargs['year'],True)
         return HttpResponse(response)
