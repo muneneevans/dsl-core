@@ -190,6 +190,25 @@ def get_country_summary(in_json=False):
     else:
         return response
 
+#get summary of facility types by county
+def get_country_facility_type_summary(in_json=False):
+    '''return a table of facility types per county'''
+    conn = connection.get_connection()
+    all_facility_types = pd.DataFrame()
+    facility_types_query = '''SELECT facilities_facility.id as count, common_county.name AS county_name, facilities_facilitytype.name  as facility_type_name
+        FROM facilities_facility , common_ward , common_constituency , common_county, facilities_facilitytype 
+        WHERE facilities_facility.ward_id = common_ward.id 
+            AND common_ward.constituency_id = common_constituency.id
+            AND facilities_facilitytype.id = facilities_facility.facility_type_id
+            AND common_constituency.county_id = common_county.id'''
+    all_facility_types = pd.read_sql(facility_types_query, con=conn).groupby(['county_name','facility_type_name']).count().unstack().T.fillna(0).xs('count', axis=0, drop_level=True)
+    
+    
+    if in_json:
+        return all_facility_types.to_json(orient='columns')
+    else:
+        return all_facility_types
+
 #get a specific facility
 def get_facility_by_id(facility_id, in_json=False):
     '''returns a facility matching the facility id '''
