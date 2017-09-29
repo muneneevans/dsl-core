@@ -227,6 +227,21 @@ def get_country_keph_level_summary(in_json=False):
     else:
         return country_summary
 
+#get country beds summary
+def get_country_beds_summary(in_json=False):    
+    conn = connection.get_connection()
+    country_summary = pd.DataFrame()
+    facility_types_query = '''SELECT facilities_facility.number_of_beds as total, common_county.name AS county_name
+        FROM facilities_facility , common_ward , common_constituency , common_county
+        WHERE facilities_facility.ward_id = common_ward.id 
+            AND common_ward.constituency_id = common_constituency.id            
+            AND common_constituency.county_id = common_county.id'''
+    country_summary = pd.read_sql(facility_types_query, con=conn).groupby(['county_name']).sum().unstack().T.fillna(0).xs('total', axis=0, drop_level=True).T
+    
+    if in_json:
+        return country_summary.to_json()
+    else:
+        return country_summary
 
 #get a specific facility
 def get_facility_by_id(facility_id, in_json=False):

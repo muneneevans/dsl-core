@@ -11,6 +11,7 @@ facility_urls = [
     url(r'^country/summary/$',CountrySummary.as_view(), name='country-summary'),
     url(r'^country/facilitytypes/summary/$',CountryFacilityTypeSummary.as_view(), name='country-facilitytypes-summary'),
     url(r'^country/kephlevels/summary/$',CountryKephLevelsSummary.as_view(), name='country-kephlevels-summary'),
+    url(r'^country/beds/summary/$',CountryBedsSummary.as_view(), name='country-beds-summary'),
 
     url(r'^county/(?P<county_id>[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89aAbB][a-f0-9]{3}-[a-f0-9]{12})/facilities/$',CountyFacilities.as_view(), name='county-facilities'),
     url(r'^county/(?P<county_id>[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89aAbB][a-f0-9]{3}-[a-f0-9]{12})/summary/$',CountySummary.as_view(), name='county-summary'),
