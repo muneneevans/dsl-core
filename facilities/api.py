@@ -28,6 +28,10 @@ class CountryFacilityTypeSummary(ListAPIView):
     def get(self, request):
         response  = facilities.get_country_facility_type_summary(True)
         return HttpResponse(response)
+class CountryKephLevelsSummary(ListAPIView):
+    def get(self, request):
+        response  = facilities.get_country_keph_level_summary(True)
+        return HttpResponse(response)
 class CountyFacilities(ListAPIView):
     def get(self, request, **kwargs):
         result = facilities.get_county_facilities(kwargs['county_id'],True)

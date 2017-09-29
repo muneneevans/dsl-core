@@ -209,6 +209,25 @@ def get_country_facility_type_summary(in_json=False):
     else:
         return all_facility_types
 
+
+#get country keph levels summayr in counties
+def get_country_keph_level_summary(in_json=False):
+    conn = connection.get_connection()
+    country_summary = pd.DataFrame()
+    facility_types_query = '''SELECT facilities_facility.id as count, common_county.name AS county_name, facilities_kephlevel.name  as keph_level_name
+        FROM facilities_facility , common_ward , common_constituency , common_county, facilities_kephlevel
+        WHERE facilities_facility.ward_id = common_ward.id 
+            AND common_ward.constituency_id = common_constituency.id
+            AND facilities_kephlevel.id = facilities_facility.keph_level_id
+            AND common_constituency.county_id = common_county.id'''
+    country_summary = pd.read_sql(facility_types_query, con=conn).groupby(['county_name','keph_level_name']).count().unstack().T.fillna(0).xs('count', axis=0, drop_level=True).T
+    
+    if in_json:
+        return country_summary.to_json(orient='table')
+    else:
+        return country_summary
+
+
 #get a specific facility
 def get_facility_by_id(facility_id, in_json=False):
     '''returns a facility matching the facility id '''
