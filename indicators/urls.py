@@ -3,6 +3,14 @@ from api import *
 
 app_name= 'indicators'
 
+indicator_api_urls = [
+    url(r'^$', IndicatorsListView.as_view(),name='indicators-list'),
+    url(r'^indicatorgroups$', IndicatorGroupsListView.as_view(),name='indicatorgroups-list'),
+    url(r'^indicatorgroups/(?P<indicatorgroupid>\d+)$', IndicatorGroupsIndicatorsListView.as_view(),name='indicatorgroups-indicators-list'),
+
+]
+
+
 dataelement_api_urls =[
     url(r'^$', DataElementsListView.as_view(),name='dataelement-list'),
    
@@ -25,6 +33,7 @@ periods_api_urls = [
 ]
 
 api_urls = [
+    url(r'^indicators/', include(indicator_api_urls)),
     url(r'^dataelements/', include(dataelement_api_urls)),
     url(r'^datavalues/', include(datavalue_api_urls)),
     url(r'^periods/', include(periods_api_urls)),

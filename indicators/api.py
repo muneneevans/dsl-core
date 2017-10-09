@@ -1,7 +1,22 @@
 from rest_framework.generics import ListAPIView
 from django.http import HttpResponse, JsonResponse
-from analysis import dataelements, datavalues, category_option_combos, periods
+from analysis import dataelements, datavalues, category_option_combos, periods, indicators
 
+
+class IndicatorsListView(ListAPIView):
+    def get(self , request):
+        response = indicators.get_indicators(True)
+        return HttpResponse(response)
+
+class IndicatorGroupsListView(ListAPIView):
+    def get(self , request):
+        response = indicators.get_indicator_groups(True)
+        return HttpResponse(response)
+
+class IndicatorGroupsIndicatorsListView(ListAPIView):
+    def get(self, request, **kwargs):
+        response = indicators.get_indicator_group_indicators(int(kwargs['indicatorgroupid']), True)
+        return HttpResponse(response)
 
 class DataElementsListView(ListAPIView):
     def get(self, request):
