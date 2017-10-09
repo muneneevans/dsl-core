@@ -156,19 +156,24 @@ def get_constituency_summary(constituency_id, in_json=False):
         return constituency_summary
 
 #get county summaries
-def get_county_summary(county_id, in_json=False):
-    '''return a summary of beds and cots per county'''
-    county_facilities = get_county_facilities(county_id)
+def get_county_summary(county_id,in_json=False):
+    '''return a summary of beds cots and facilities for all counties'''
+    conn = connection.get_connection()
+    country_summary = pd.DataFrame()
+    query = '''SELECT  common_constituency.name AS constituency_name, COUNT(facilities_facility.id) as number_of_facilities , SUM(number_of_beds) AS number_of_beds, SUM(number_of_cots) AS number_of_cots
+        FROM facilities_facility , common_ward , common_constituency , common_county 
+        WHERE facilities_facility.ward_id = common_ward.id 
+            AND common_ward.constituency_id = common_constituency.id
+            AND common_constituency.county_id = common_county.id
+            AND common_county.id = '%s'
+        GROUP BY(common_constituency.name)'''%(county_id)
+    country_summary = pd.read_sql(query, con=conn)
     
-    county_facilities['number_of_facilities'] = 1
-    county_summary = county_facilities.groupby(['constituency_id','constituency_name'],as_index=False).sum()[
-        ['number_of_beds','number_of_cots','number_of_facilities','constituency_id','constituency_name']]
-    
-    if in_json:
-        return county_summary.to_json(orient='records')
-    else:
 
-        return county_summary
+    if in_json:
+        return country_summary.to_json(orient='records')
+    else:
+        return country_summary
 
 def get_country_summary(in_json=False):
     '''return a summary of beds cots and facilities for all counties'''
