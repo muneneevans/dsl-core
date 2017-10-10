@@ -58,3 +58,8 @@ class PeriodsListView(ListAPIView):
     def get(self, request, **kwargs):
         response = periods.get_year_periods(kwargs['year'],True)
         return HttpResponse(response)
+
+class PeriodTypesListView(ListAPIView):
+    def get(self, request):
+        response = periods.get_period_types(True)
+        return HttpResponse(response)

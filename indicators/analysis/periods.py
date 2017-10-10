@@ -30,4 +30,17 @@ def get_year_periods(year_id, in_json=False):
         return all_periods.to_json(orient='records')
     else:
         return all_periods
+
+def get_period_types(in_json=False):
+    '''return all period types'''
+    conn = connection.get_connection()
+    all_period_types = DataFrame()
     
+    query = "select DISTINCT(periodtypename) as name, periodtypeid as id  from dim_dhis_period;"
+    for chunk in pd.read_sql(query, con=conn, chunksize=10000):
+        all_period_types = all_period_types.append(chunk)
+    
+    if in_json:
+        return all_period_types.to_json(orient='records')
+    else:
+        return all_period_types

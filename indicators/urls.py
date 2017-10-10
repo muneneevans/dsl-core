@@ -30,6 +30,7 @@ datavalue_api_urls = [
 
 periods_api_urls = [
     url(r'^year/(?P<year>\w+)/$', PeriodsListView.as_view(),name='periolds-view'),
+    url(r'^periodtypes/$', PeriodTypesListView.as_view(),name='periold-types-view'),
 ]
 
 api_urls = [
