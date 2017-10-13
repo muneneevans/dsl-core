@@ -26,6 +26,7 @@ category_combo_api_urls = [
 
 datavalue_api_urls = [
     url(r'^facility/(?P<facility_id>[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89aAbB][a-f0-9]{3}-[a-f0-9]{12})/dataelement/(?P<dataelement_id>\w+)/$', FacilityDataElementDataValues.as_view(),name='facility-dataelement-detavalues'),
+    url(r'^facility/indicator/$', FacilityIndicatorDataValues.as_view(),name='facility-indicator-datavalues'),
 ]
 
 periods_api_urls = [
