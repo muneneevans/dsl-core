@@ -4,6 +4,7 @@ import numpy as np
 import dataelements
 import pandas as pd
 from pandas import DataFrame
+import re
 
 
 def get_indicator_groups(in_json=False):
@@ -80,3 +81,17 @@ def get_indicators(in_json=False):
         return all_indicators.to_json(orient='records')
     else:
         return all_indicators
+
+
+def get_indicator_by_id(indicator_id, in_json=False):
+    ''' get specific indicator by id
+        returns a dataframe of json string'''
+    conn = connection.get_connection()
+    
+    query = "SELECT * FROM dim_dhis_indicator WHERE indicatorid = '%s';" %(indicator_id)
+    indicator = pd.read_sql(query, conn)
+    
+    if in_json:
+        return indicator.to_json(orient='records')
+    else:
+        return indicator

@@ -32,3 +32,21 @@ def get_category_option_combo_by_id(category_option_combo_id, in_json=False):
         return category_combo.to_json(orient='records')
     else:
         return category_combo
+
+
+def get_category_option_combo_by_uid(category_option_combo_id, in_json=False):
+    ''' get the category option combo that matches the given uid
+        returns a dataframe or json string in record orientation '''
+
+    conn = connection.get_connection()
+    all_category_option_combos = pd.DataFrame()
+    query =  '''SELECT * 
+                FROM dim_dhis_categoryoptioncombo
+                WHERE uid = '%s'
+            ''' %(category_option_combo_id)
+    all_category_option_combos =  pd.read_sql(query, con=conn)
+        
+    if in_json:
+        return all_category_option_combos.to_json(orient="records")
+    else:
+        return all_category_option_combos

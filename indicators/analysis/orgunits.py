@@ -22,19 +22,16 @@ def get_organization_units(in_json=False):
 
 #get a orgunit matching a facility
 def get_facility_org_units(facility_id, in_json=False):
-    '''returns an orgunit with the code matching that of the facility'''
-    #get the facility 
-    facility = facilities.get_facility_by_id(facility_id)
-    facility['code'] = facility['code'].astype(str)
+    '''returns an orgunit with the code matching that of the facility
+        retruns a dataframe object or json with record orientation'''
+    conn = connection.get_connection()        
+    query = ''' SELECT  a.organisationunitid, a.code, b.name
+                FROM dim_dhis_organisationunit a , facilities_facility b
+                WHERE a.code = CAST(b.code as VarChar) AND b.id = '%s' ''' %(facility_id)
     
-    #get all org units
-    all_orgunits = get_organization_units()
-    all_orgunits['code'] = all_orgunits['code'].astype(str)
-    facility_orgunits = pd.merge(all_orgunits, facility, on='code')
+    facility_orgunit = pd.read_sql(query,conn)
     
-    facility_orgunits = facility_orgunits.head(1)
-
     if in_json:
-        return facility_orgunits.to_json(orient='records')
+        return facility_orgunit.to_json(orient='records')
     else:
-        return facility_orgunits
+        return facility_orgunit

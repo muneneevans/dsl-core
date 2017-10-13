@@ -44,3 +44,22 @@ def get_period_types(in_json=False):
         return all_period_types.to_json(orient='records')
     else:
         return all_period_types
+
+#get period ids from year
+def get_year_periodtypes(year_id, period_type_id, in_json=False):
+    ''' return all periods in the year specified 
+        returns dataframe or json string with records orientattion'''
+    conn = connection.get_connection()
+    all_periods = DataFrame()
+    #query = "SELECT * FROM dim_dhis_period WHERE yearmonth LIKE"
+    query = "SELECT * FROM dim_dhis_period WHERE yearmonth @@ to_tsquery('%s') AND periodtypeid = '%s'" %(year_id,period_type_id)
+    for chunk in pd.read_sql(query, con=conn, chunksize=10000):
+        all_periods = all_periods.append(chunk)
+    
+    all_periods['year'] = all_periods['yearmonth'].str.split(' ').str[1]
+    all_periods['month'] = all_periods['yearmonth'].str.split(' ').str[2]
+
+    if in_json:
+        return all_periods.to_json(orient='records')
+    else:
+        return all_periods
