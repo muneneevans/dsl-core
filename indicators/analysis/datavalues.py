@@ -115,6 +115,7 @@ def get_facility_indicator_datavalues(facility_id, indicator_id, period_type, ye
         denominator =  float(eval(denominator))
         indicator_value = {
             'indicator_id': indicator['indicatorid'],
+            'name': indicator['indicatorname'],
             'value': (numerator/denominator),
             'year' : period['year'],
             'month': period['month']
