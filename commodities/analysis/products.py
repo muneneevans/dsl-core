@@ -9,7 +9,7 @@ def get_all_products(in_json=False):
     ''' Get all kemsa products '''
     conn = connection.get_connection()
     
-    all_products = pd.read_sql('SELECT  DISTINCT(m_product_id), product FROM fact_kemsa_order', conn)
+    all_products = pd.read_sql('SELECT  DISTINCT(m_product_id) as id, product as name FROM fact_kemsa_order', conn)
     
     if in_json:
         return all_products.to_json(orient='records')
