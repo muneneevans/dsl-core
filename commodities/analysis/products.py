@@ -19,7 +19,7 @@ def get_all_products(in_json=False):
 def get_facility_products(facility_id, in_json=False):
     ''' Return a list of all products that have been ordered by the facility
         returns a dataframe or json string in records orientation'''
-    query = """ SELECT a.product, a.m_product_id as product_id, b.id as facility_id, b.name
+    query = """ SELECT a.product as name, a.m_product_id as id, b.id as facility_id, b.name as facility_name
                 FROM fact_kemsa_order a, facilities_facility b
                 WHERE a.facilitycode = b.code
                 AND   b.id = '%s' """%(facility_id)
