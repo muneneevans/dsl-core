@@ -15,3 +15,17 @@ def get_all_products(in_json=False):
         return all_products.to_json(orient='records')
     else:
         return all_products
+
+def get_facility_products(facility_id, in_json=False):
+    ''' Return a list of all products that have been ordered by the facility
+        returns a dataframe or json string in records orientation'''
+    query = """ SELECT a.product, a.m_product_id as product_id, b.id as facility_id, b.name
+                FROM fact_kemsa_order a, facilities_facility b
+                WHERE a.facilitycode = b.code
+                AND   b.id = '%s' """%(facility_id)
+    facility_products =  pd.read_sql(query,connection.get_connection())
+    
+    if in_json:
+        return  facility_products.to_json(orient='records')
+    else:
+        return facility_products
