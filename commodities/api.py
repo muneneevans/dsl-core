@@ -13,4 +13,12 @@ class FacilityProductsListView(ListAPIView):
     def get(self, request, **kwargs):
         response = products.get_facility_products(kwargs['facility_id'], True)
         return HttpResponse(response)
+    def post(self, request, **kwargs):
+        filters = request.data['filters']
+        required_filters = [ 'year']
+        for r_filter in required_filters:
+            if not r_filter in filters.keys():
+                return  JsonResponse({'status':'bad request','message':"missing attribute: "+ r_filter}, status=400)
         
+        response = products.get_facility_year_products(kwargs['facility_id'],filters['year'], True)
+        return HttpResponse(response)
