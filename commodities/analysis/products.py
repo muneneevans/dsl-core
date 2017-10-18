@@ -35,12 +35,13 @@ def get_facility_year_products(facility_id,year, in_json=False):
         returns a dataframe or a json stirng on record orientation '''
 
     query = """ SELECT  a.m_product_id as id, a.product as name , 
-                            SUM(a.movementqty) as quantity, SUM(a.qtyordered) as quantity_ordered, AVG(unitprice) as average_price
-                    FROM fact_kemsa_order a, facilities_facility b
-                    WHERE a.facilitycode = b.code
-                    AND   b.id = '%s' 
-                    AND date_part('year',  a.dateordered ) = %s
-                    GROUP BY a.m_product_id , a.product"""%('2e21b2de-7c5b-4db7-bb1d-26930af9274d', 2015)
+                        SUM(a.movementqty) as quantity, SUM(a.qtyordered) as quantity_ordered, 
+                        AVG(unitprice) as average_price, date_part('month',  a.dateordered ) as month
+                FROM fact_kemsa_order a, facilities_facility b
+                WHERE a.facilitycode = b.code
+                AND   b.id = '%s' 
+                AND date_part('year',  a.dateordered  ) = %s
+                GROUP BY a.m_product_id , a.product, a.dateordered"""%(facility_id, year)
     facility_products =  pd.read_sql(query, connection.get_connection())
         
     
