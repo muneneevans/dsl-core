@@ -22,7 +22,6 @@ def get_facility_types_codes(in_json=False):
     else:
         return all_facility_types
 
-
 #get facility keph levels
 def get_facility_keph_levels_codes(in_json=False):
     '''return all facility keph levels'''
@@ -125,7 +124,6 @@ def get_county_facilities(county_id, in_json=False):
     else:
         return all_facilities
 
-
 #get ward summaries
 def get_ward_summary(ward_id, in_json=False):
     '''return a summary of facilities in  ward'''
@@ -174,6 +172,24 @@ def get_county_summary(county_id,in_json=False):
         return country_summary.to_json(orient='records')
     else:
         return country_summary
+
+
+def get_county_detailed_summary(county_id, in_json=False):
+    conn = connection.get_connection()
+    all_facilities = pd.DataFrame()
+    facility_types_query = '''SELECT facilities_facility.id as count, common_constituency.name AS constituency_name, facilities_facilitytype.name  as facility_type_name
+        FROM facilities_facility , common_ward , common_constituency , common_county, facilities_facilitytype 
+        WHERE facilities_facility.ward_id = common_ward.id 
+            AND common_ward.constituency_id = common_constituency.id
+            AND facilities_facilitytype.id = facilities_facility.facility_type_id
+            AND common_constituency.county_id = common_county.id
+            AND common_county.id = '%s' '''%(county_id)
+    all_facilities = pd.read_sql(facility_types_query, con=conn).groupby(['constituency_name','facility_type_name']).count().unstack().T.fillna(0).xs('count', axis=0, drop_level=True).T
+    
+    if in_json:
+        return all_facilities.to_json(orient='table')
+    else:
+        return all_facilities
 
 def get_country_summary(in_json=False):
     '''return a summary of beds cots and facilities for all counties'''

@@ -47,6 +47,12 @@ class CountySummary(ListAPIView):
         response = facilities.get_county_summary(kwargs['county_id'], True)
         return HttpResponse(response)
 
+class CountyDetailedSummary(ListAPIView):
+    def get(self, request, **kwargs):
+        response = facilities.get_county_detailed_summary(kwargs['county_id'], True)
+        return HttpResponse(response)
+
+
 class ConstituencyFacilities(ListAPIView):
     def get(self, request, **kwargs):
         response = facilities.get_constituency_facilities(kwargs['constituency_id'], True)
