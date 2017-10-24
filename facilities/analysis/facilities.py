@@ -191,6 +191,23 @@ def get_county_facility_type_summary(county_id, in_json=False):
     else:
         return all_facilities
 
+def get_county_keph_level_summary(county_id, in_json=False):
+    conn = connection.get_connection()
+    all_facilities = pd.DataFrame()
+    facility_types_query = '''SELECT facilities_facility.id as count, common_constituency.name AS constituency_name, facilities_kephlevel.name  as keph_level_name
+        FROM facilities_facility , common_ward , common_constituency , common_county, facilities_kephlevel
+        WHERE facilities_facility.ward_id = common_ward.id 
+            AND common_ward.constituency_id = common_constituency.id
+            AND facilities_kephlevel.id = facilities_facility.keph_level_id
+            AND common_constituency.county_id = common_county.id
+            AND common_county.id = '%s' '''%(county_id)
+    all_facilities = pd.read_sql(facility_types_query, con=conn).groupby(['constituency_name','keph_level_name']).count().unstack().T.fillna(0).xs('count', axis=0, drop_level=True).T
+    
+    if in_json:
+        return all_facilities.to_json(orient='table')
+    else:
+        return all_facilities
+
 def get_country_summary(in_json=False):
     '''return a summary of beds cots and facilities for all counties'''
     conn = connection.get_connection()

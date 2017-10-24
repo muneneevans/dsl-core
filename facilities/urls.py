@@ -15,7 +15,8 @@ facility_urls = [
 
     url(r'^county/(?P<county_id>[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89aAbB][a-f0-9]{3}-[a-f0-9]{12})/facilities/$',CountyFacilities.as_view(), name='county-facilities'),
     url(r'^county/(?P<county_id>[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89aAbB][a-f0-9]{3}-[a-f0-9]{12})/summary/$',CountySummary.as_view(), name='county-summary'),
-    url(r'^county/(?P<county_id>[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89aAbB][a-f0-9]{3}-[a-f0-9]{12})/facilitytypes/summary/$',CountyFacilityTypesSummary.as_view(), name='county-detailed-summary'),
+    url(r'^county/(?P<county_id>[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89aAbB][a-f0-9]{3}-[a-f0-9]{12})/facilitytypes/summary/$',CountyFacilityTypesSummary.as_view(), name='county-facilitytypes-summary'),
+    url(r'^county/(?P<county_id>[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89aAbB][a-f0-9]{3}-[a-f0-9]{12})/kephlevels/summary/$',CountyKephLevelsSummary.as_view(), name='county-kephlevels-summary'),
     
     url(r'^constituency/(?P<constituency_id>[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89aAbB][a-f0-9]{3}-[a-f0-9]{12})/facilities/$',ConstituencyFacilities.as_view(), name='constituency-facilities'),
     url(r'^constituency/(?P<constituency_id>[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89aAbB][a-f0-9]{3}-[a-f0-9]{12})/summary/$',ConstituencySummary.as_view(), name='constituency-summary'),

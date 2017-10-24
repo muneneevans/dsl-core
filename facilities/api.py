@@ -52,6 +52,11 @@ class CountyFacilityTypesSummary(ListAPIView):
         response = facilities.get_county_facility_type_summary(kwargs['county_id'], True)
         return HttpResponse(response)
 
+class CountyKephLevelsSummary(ListAPIView):
+    def get(self, request, **kwargs):
+        response = facilities.get_county_keph_level_summary(kwargs['county_id'], True)
+        return HttpResponse(response)
+
 
 class ConstituencyFacilities(ListAPIView):
     def get(self, request, **kwargs):
