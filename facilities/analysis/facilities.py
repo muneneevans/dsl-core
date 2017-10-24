@@ -174,7 +174,7 @@ def get_county_summary(county_id,in_json=False):
         return country_summary
 
 
-def get_county_detailed_summary(county_id, in_json=False):
+def get_county_facility_type_summary(county_id, in_json=False):
     conn = connection.get_connection()
     all_facilities = pd.DataFrame()
     facility_types_query = '''SELECT facilities_facility.id as count, common_constituency.name AS constituency_name, facilities_facilitytype.name  as facility_type_name
