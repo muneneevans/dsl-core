@@ -37,7 +37,6 @@ def get_dataelement_datavalues(dataelement_id, in_json=False):
         return dataelement_datavalues
 
 
-
 def get_facility_dataelement_datavalues(dataelement_id, source_id, period_id, category_combo_id=None, in_json=False):
     conn = connection.get_connection()
     all_datavalues = DataFrame()
@@ -79,14 +78,16 @@ def get_facility_indicator_datavalues(facility_id, indicator_id, period_type, ye
     for col, period in selected_periods.iterrows():
         numerator = indicator['numerator'] 
 
-        for datelement_category_combo in numerator_dataelements:                       
-            dataelement = re.sub('\.','' , re.findall("[a-zA-Z0-9]+\.", datelement_category_combo)[0]) 
+        for datelement_category_combo in numerator_dataelements:      
+            dataelement = None                 
             combo = re.findall("\.[a-zA-Z0-9]+", datelement_category_combo)
             if combo:
                 combo = re.sub('\.','', combo[0])
                 combo_uid = category_option_combos.get_category_option_combo_by_uid(combo).loc[0]['categoryoptioncomboid']
+                dataelement = re.sub('\.','' , re.findall("[a-zA-Z0-9]+\.", datelement_category_combo)[0]) 
             else:
                 combo_uid = None
+                dataelement = re.findall("[a-zA-Z0-9]+", datelement_category_combo)[0]
 
             value = get_facility_dataelement_datavalues(dataelement, facility['organisationunitid'], period['periodid'], combo_uid)
 
@@ -99,13 +100,15 @@ def get_facility_indicator_datavalues(facility_id, indicator_id, period_type, ye
         
         denominator = indicator['denominator']
         for datelement_category_combo in denominator_dataelements:                       
-            dataelement = re.sub('\.','' , re.findall("[a-zA-Z0-9]+\.", datelement_category_combo)[0]) 
+            dataelement = None
             combo = re.findall("\.[a-zA-Z0-9]+", datelement_category_combo)
             if combo:
                 combo = re.sub('\.','', combo[0])
                 combo_uid = category_option_combos.get_category_option_combo_by_uid(combo).loc[0]['categoryoptioncomboid']
+                dataelement = re.sub('\.','' , re.findall("[a-zA-Z0-9]+\.", datelement_category_combo)[0]) 
             else:
                 combo_uid = None
+                dataelement = re.findall("[a-zA-Z0-9]+", datelement_category_combo)[0]
 
             value = get_facility_dataelement_datavalues(dataelement, facility['organisationunitid'], period['periodid'], combo_uid)
             if value.empty:      
