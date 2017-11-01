@@ -17,3 +17,16 @@ def get_job_types(in_json=False):
         return all_job_types.to_json(orient='records')
     else:
         return all_job_types
+
+
+#get all cadres
+def get_cadres(in_json=False):
+    ''' return a list of all job types
+        returns a dataframe or json string in record orientation '''
+    query = ''' SELECT cadreid as id, cadrename as name FROM dim_ihris_cadre '''
+    all_cadres = pd.read_sql(query, connection.get_connection())
+    
+    if in_json:
+        return all_cadres.to_json(orient='records')
+    else:
+        return all_cadres

@@ -5,6 +5,7 @@ app_name = 'hr'
 
 staff_urls=[
     url(r'^jobtypes/$',JobTypesView.as_view(), name='job-types'),
+    url(r'^cadres/$',CadresView.as_view(), name='cadres'),
 ]
 
 api_urls=[

@@ -9,3 +9,8 @@ class JobTypesView(ListAPIView):
     def get(self, request):
         response = staff.get_job_types(True)
         return HttpResponse(response)
+
+class CadresView(ListAPIView):
+    def get(self, request):
+        response = staff.get_cadres(True)
+        return HttpResponse(response)
