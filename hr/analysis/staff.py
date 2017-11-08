@@ -30,3 +30,17 @@ def get_cadres(in_json=False):
         return all_cadres.to_json(orient='records')
     else:
         return all_cadres
+
+def get_facility_staff(facility_id, in_json=False):
+    ''' Return a list of all products that have been ordered by the facility'''
+    query = """ SELECT a.value, b.dataelementname, c.name 
+                FROM fact_ihris_datavalue a, dim_ihris_dataelement b, facilities_facility c
+                WHERE a.mflcode = c.code 
+                    AND a.dataelementid = b.uid
+                    AND c.id = '%s' """%(facility_id)
+    staff = pd.read_sql(query, connection.get_connection())
+
+    if in_json:
+        return staff.to_json(orient='records')
+    else:
+        return staff

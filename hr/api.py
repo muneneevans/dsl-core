@@ -14,3 +14,8 @@ class CadresView(ListAPIView):
     def get(self, request):
         response = staff.get_cadres(True)
         return HttpResponse(response)
+
+class FacilityStaffView(ListAPIView):
+    def get(self, request, **kwargs):
+        response = staff.get_facility_staff(kwargs['facility_id'],True)
+        return HttpResponse(response)
