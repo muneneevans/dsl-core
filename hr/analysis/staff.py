@@ -33,7 +33,7 @@ def get_cadres(in_json=False):
 
 def get_facility_staff(facility_id, in_json=False):
     ''' Return a list of all products that have been ordered by the facility'''
-    query = """ SELECT a.value, b.dataelementname, c.name 
+    query = """ SELECT a.value, b.dataelementname as jobType, c.name 
                 FROM fact_ihris_datavalue a, dim_ihris_dataelement b, facilities_facility c
                 WHERE a.mflcode = c.code 
                     AND a.dataelementid = b.uid
