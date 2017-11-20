@@ -18,7 +18,12 @@ def get_connection():
                 config['user'], config['passw'])
     
     try:
-        conn = psycopg2.connect(conn_str)
-        return conn
-    except Exception:
-        return Exception.message
+        if not hasattr(get_connection, "conn"):
+            print('new')
+            get_connection.conn = psycopg2.connect(conn_str)
+            return get_connection.conn
+        else:
+            print('same')
+            return get_connection.conn        
+    except('error'):
+        return 'error in connecting to database'
