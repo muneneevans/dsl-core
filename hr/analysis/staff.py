@@ -44,3 +44,18 @@ def get_facility_staff(facility_id, in_json=False):
         return staff.to_json(orient='records')
     else:
         return staff
+
+def get_facility_job_type(facility_id, job_type_id,  in_json=False):
+    ''' Return a list of all staff in the facility'''
+    query = """ SELECT a.value, b.dataelementname, b.uid, c.name 
+                FROM fact_ihris_datavalue a, dim_ihris_dataelement b, facilities_facility c
+                WHERE a.mflcode = c.code 
+                    AND a.dataelementid = b.uid
+                    AND b.uid = '%s'
+                    AND c.id = '%s'"""%( job_type_id,facility_id)
+    staff = pd.read_sql(query, connection.get_connection())
+
+    if in_json:
+        return staff.to_json(orient='records')
+    else:
+        return staff
