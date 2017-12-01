@@ -160,6 +160,7 @@ def get_facility_indicator_datavalues(facility_id, indicator_id, period_type, ye
 
         indicator_value = {
             'indicator_id': indicator['indicatorid'],
+            'name': indicator['indicatorname'],
             'value': (numerator_formula/denominator_formula),
             'year' : period['year'],
             'month': period['month']
