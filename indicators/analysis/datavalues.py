@@ -83,6 +83,9 @@ def get_facility_indicator_datavalues(facility_id, indicator_id, period_type, ye
     categorycombos_only = tuple([re.sub('\.','', x)  for x in categorycombos_only])
     if not categorycombos_only:
         categorycombos_only = """(NULL)"""
+    else:
+        if len(categorycombos_only) == 1:
+            categorycombos_only = "(\'" +str(categorycombos_only[0])+'\')'
 
     #remove the categoryoptioncombos from the list
     indicator_numerator = re.sub('\.[a-zA-Z0-9]+','', indicator['numerator'] + indicator['denominator'])
@@ -90,7 +93,8 @@ def get_facility_indicator_datavalues(facility_id, indicator_id, period_type, ye
     #the remaining are dataelements only
     dataelements_only = re.findall('[a-zA-Z0-9]+' , indicator_numerator)
     dataelements_only = tuple([x.encode('ascii','ignore') for x in dataelements_only])
-    
+    if len(dataelements_only) == 1:
+        dataelements_only = "(\'" +str(dataelements_only[0])+'\')'
     #filter all categoryoption combox and add to list
     for col,period in year_periods.iterrows():
         query = '''

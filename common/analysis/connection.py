@@ -19,11 +19,11 @@ def get_connection():
     
     try:
         if not hasattr(get_connection, "conn"):
-            print('new')
+            
             get_connection.conn = psycopg2.connect(conn_str)
             return get_connection.conn
         else:
-            print('same')
+            
             return get_connection.conn        
     except('error'):
         return 'error in connecting to database'
