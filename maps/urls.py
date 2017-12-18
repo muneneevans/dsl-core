@@ -27,10 +27,16 @@ constituency_api_urls=[
 ]
 
 
+ward_api_urls =[
+
+    url(r'^(?P<ward_id>[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89aAbB][a-f0-9]{3}-[a-f0-9]{12})/$', WardDetails.as_view(), name='ward-details'),
+]
+
 api_urls = [
     url(r'^countries/', include(Country_api_urls)),
     url(r'^constituencies/', include(constituency_api_urls)),
     url(r'^counties/', include(county_api_urls)),
+    url(r'^wards/', include(ward_api_urls)),
 ]
 
 urlpatterns = [

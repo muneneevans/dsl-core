@@ -31,7 +31,6 @@ class KenyaCountyList(generics.ListAPIView):
 
         return HttpResponse(result)
 
-
 class CountyConstituencyList(generics.ListAPIView):
     def get(self, request, **kwargs):
         result = constituencies.get_county_constituency_codes(kwargs['county_id'], True)
@@ -43,3 +42,8 @@ class ConstituencyWardList(generics.ListAPIView):
         result = wards.get_constituency_wards(kwargs['constituency_id'], True)
 
         return HttpResponse(result)
+
+class WardDetails(generics.ListAPIView):
+    def get(self, request, **kwargs):
+        response = wards.get_ward_by_id(kwargs['ward_id'], True)
+        return HttpResponse(response)
