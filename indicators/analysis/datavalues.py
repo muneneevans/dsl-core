@@ -63,7 +63,7 @@ def get_facility_dataelement_datavalues(dataelement_id, source_id, period_id, ca
     else:
         return all_datavalues
 
-def get_facility_indicator_datavalues(facility_id, indicator_id, period_type, year, in_json=False):    
+def get_facility_indicator_datavalues(facility_id, indicator_id, period_type, year, in_json=False):
     indicator = indicators.get_indicator_by_id(indicator_id).loc[0]
     year_periods = periods.get_year_periodtypes(year,period_type)
     facility = orgunits.get_facility_org_units(facility_id).loc[0]
@@ -174,3 +174,28 @@ def get_facility_indicator_datavalues(facility_id, indicator_id, period_type, ye
         numerator_formula = indicator['numerator']
         denominator_formula = indicator['denominator']
     return results
+
+
+def get_ward_indicator_datavalues(ward_id, indicator_id, period_type, year, in_json=False):
+    facilities = pd.read_sql("SELECT * FROM facilities_facility WHERE ward_id = '%s' ;" %(ward_id), connection.get_connection())
+
+    result= []
+    for col, facility in facilities.iterrows():
+        try:
+            result.append(
+                {
+                    'id': facility['id'],
+                    'name': facility['name'],
+                    'value': get_facility_indicator_datavalues(facility.id,indicator_id,period_type,year)
+                }
+            )        
+        except:
+            result.append(
+                {
+                    'id': facility['id'],
+                    'name': facility['name'],
+                    'value': []
+                }
+            )                                
+                    
+    return result
