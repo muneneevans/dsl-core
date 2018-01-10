@@ -66,8 +66,8 @@ def get_ward_facilities(ward_id, in_json=False, filters=None):
         for key, value in filters.iteritems():            
             all_facilities = all_facilities[all_facilities[key] == value]
 
-    
-    all_facilities['ward_name'] = ward['ward_name'][0]
+       
+    all_facilities['ward_name'] = ward['name'][0]
     all_facilities['constituency_name'] = constituency['name'][0]
     all_facilities['constituency_id'] = constituency['id'][0]
     all_facilities['county_name'] = county['name'][0]
