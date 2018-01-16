@@ -39,7 +39,7 @@ def get_facility_staff(facility_id, in_json=False):
                     AND a.dataelementid = b.uid
                     AND c.id = '%s' """%(facility_id)
     staff = pd.read_sql(query, connection.get_connection())
-
+    
     if in_json:
         return staff.to_json(orient='records')
     else:
@@ -54,8 +54,43 @@ def get_facility_job_type(facility_id, job_type_id,  in_json=False):
                     AND b.uid = '%s'
                     AND c.id = '%s'"""%( job_type_id,facility_id)
     staff = pd.read_sql(query, connection.get_connection())
+    staff['value'] = pd.to_numeric(staff['value'],downcast='float')
+    staff = staff.groupby(['dataelementname']).sum()
 
     if in_json:
         return staff.to_json(orient='records')
     else:
         return staff
+
+def get_country_jobtypes(in_json=False):
+    '''return a summaryy of all staff in the country'''
+    query = """ SELECT a.value, b.dataelementname as jobtype, b.uid, c.name 
+                FROM fact_ihris_datavalue a, dim_ihris_dataelement b, facilities_facility c
+                WHERE a.mflcode = c.code 
+                    AND a.dataelementid = b.uid"""                
+    staff = pd.read_sql(query, connection.get_connection())
+    staff['value'] = pd.to_numeric(staff['value'],downcast='float')
+    staff = staff.groupby(['jobtype']).sum()
+
+    if in_json:
+        return staff.to_json()
+    else:
+        return staff    
+
+def get_country_county_number_of_staff(in_json=False):
+    '''return a summaryy of all staff in the country'''
+    query = """ SELECT a.value, b.dataelementname as jobtype, b.uid, c.name , f.name as county
+                FROM fact_ihris_datavalue a, dim_ihris_dataelement b, facilities_facility c, common_ward d, common_constituency e, common_county f
+                WHERE a.mflcode = c.code 
+                    AND a.dataelementid = b.uid
+                    AND c.ward_id = d.id 
+                    AND d.constituency_id = e.id 
+                    AND e.county_id = f.id"""                
+    staff = pd.read_sql(query, connection.get_connection())
+    staff['value'] = pd.to_numeric(staff['value'],downcast='float')
+    staff = staff.groupby(['county']).sum()[['value']]
+
+    if in_json:
+        return staff.to_json()
+    else:
+        return staff    

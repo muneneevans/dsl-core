@@ -15,6 +15,17 @@ class CadresView(ListAPIView):
         response = staff.get_cadres(True)
         return HttpResponse(response)
 
+
+class CountryJobTypeView(ListAPIView):
+    def get(self, request, **kwargs):
+        response = staff.get_country_jobtypes(True)
+        return HttpResponse(response)
+
+class CountryCountyStaffView(ListAPIView):
+    def get(self, request, **kwargs):
+        response = staff.get_country_county_number_of_staff(True)
+        return HttpResponse(response)
+
 class FacilityStaffView(ListAPIView):
     def get(self, request, **kwargs):
         response = staff.get_facility_staff(kwargs['facility_id'],True)
