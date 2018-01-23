@@ -79,6 +79,22 @@ def get_ward_facilities(ward_id, in_json=False, filters=None):
     else:
         return all_facilities
 
+def get_ward_facility_type_summary(ward_id, in_json=False):   
+    conn = connection.get_connection()    
+    facility_types_query = '''SELECT COUNT(facilities_facility.id) as value, facilities_facilitytype.name  as facility_type_name
+        FROM facilities_facility , common_ward , facilities_facilitytype 
+        WHERE facilities_facility.ward_id = common_ward.id
+            AND facilities_facilitytype.id = facilities_facility.facility_type_id
+            AND common_ward.id = '%s' 
+            GROUP BY (facilities_facilitytype.name)'''%(ward_id)
+    all_facilities = pd.read_sql(facility_types_query, con=conn)
+    all_facilities = all_facilities.set_index('facility_type_name')
+
+    if in_json:
+        return all_facilities.to_json()
+    else:
+        return all_facilities.to_json()
+
 #get facilities in ward
 def get_constituency_facilities(constituency_id, in_json=False, filters=None):
     conn = connection.get_connection()
