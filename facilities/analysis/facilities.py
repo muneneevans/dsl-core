@@ -95,6 +95,38 @@ def get_ward_facility_type_summary(ward_id, in_json=False):
     else:
         return all_facilities.to_json()
 
+def get_ward_keph_level_summary(ward_id, in_json=False):       
+    conn = connection.get_connection()
+    all_facilities = pd.DataFrame()
+    facility_types_query = '''SELECT COUNT(facilities_facility.id) as value, facilities_kephlevel.name  as  keph_level_name
+        FROM facilities_facility , common_ward , facilities_kephlevel
+        WHERE facilities_facility.ward_id = common_ward.id
+            AND facilities_kephlevel.id = facilities_facility.keph_level_id
+            AND common_ward.id = '%s' 
+            GROUP BY (facilities_kephlevel.name)'''%(ward_id)
+    all_facilities = pd.read_sql(facility_types_query, con=conn)
+    all_facilities = all_facilities.set_index('keph_level_name')
+    
+    if in_json:
+        return all_facilities.to_json()
+    else:
+        return all_facilities.to_json()
+
+#get ward summaries
+def get_ward_summary(ward_id, in_json=False):
+    '''return a summary of facilities in  ward'''
+    ward_facilities = get_ward_facilities(ward_id)
+
+    ward_facilities['number_of_facilities'] = 1
+    ward_summary = ward_facilities.groupby(['id','name'], as_index=False).sum()[
+        ['number_of_beds','number_of_cots','number_of_facilities','id','name']]
+    
+    if in_json:
+        return ward_summary.to_json(orient='records')
+    else:
+        return ward_summary
+
+
 #get facilities in ward
 def get_constituency_facilities(constituency_id, in_json=False, filters=None):
     conn = connection.get_connection()
@@ -140,19 +172,6 @@ def get_county_facilities(county_id, in_json=False):
     else:
         return all_facilities
 
-#get ward summaries
-def get_ward_summary(ward_id, in_json=False):
-    '''return a summary of facilities in  ward'''
-    ward_facilities = get_ward_facilities(ward_id)
-
-    ward_facilities['number_of_facilities'] = 1
-    ward_summary = ward_facilities.groupby(['id','name'], as_index=False).sum()[
-        ['number_of_beds','number_of_cots','number_of_facilities','id','name']]
-    
-    if in_json:
-        return ward_summary.to_json(orient='records')
-    else:
-        return ward_summary
 
 #get constituency summaries
 def get_constituency_summary(constituency_id, in_json=False):
