@@ -13,6 +13,11 @@ country_urls =[
     url(r'^county/staff/$',CountryCountyStaffView.as_view(), name='country-county-staff-summary'),
 ]
 
+ward_urls =[
+    url(r'^(?P<ward_id>[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89aAbB][a-f0-9]{3}-[a-f0-9]{12})/facility/numberofstaff/$',WardFacilityStaffView.as_view(), name='ward-facility-staff'),
+
+]
+
 
 facility_urls =[
     url(r'^(?P<facility_id>[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89aAbB][a-f0-9]{3}-[a-f0-9]{12})/$',FacilityStaffView.as_view(), name='facility-staff'),
@@ -21,8 +26,9 @@ facility_urls =[
 
 api_urls=[
     url(r'^staff/', include(staff_urls)),
-    url(r'^facility/', include(facility_urls)),
     url(r'^country/', include(country_urls)),
+    url(r'^wards/', include(ward_urls)),
+    url(r'^facility/', include(facility_urls)),
 ]
 
 urlpatterns = [

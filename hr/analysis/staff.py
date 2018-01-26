@@ -94,3 +94,21 @@ def get_country_county_number_of_staff(in_json=False):
         return staff.to_json()
     else:
         return staff    
+
+
+def get_ward_facility_number_of_staff(ward_id, in_json=False):
+    '''return a number of all staff in the ward'''
+    query = """ SELECT a.value, b.dataelementname as jobtype, b.uid, c.name, c.ward_id, d.id as id
+                FROM fact_ihris_datavalue a, dim_ihris_dataelement b, facilities_facility c, common_ward d
+                WHERE a.mflcode = c.code 
+                    AND a.dataelementid = b.uid
+                    AND c.ward_id = d.id 
+                    AND d.id =  '%s' """%(ward_id)
+    staff = pd.read_sql(query, connection.get_connection())
+    staff['value'] = pd.to_numeric(staff['value'],downcast='float')
+    staff = staff.groupby(['name']).sum()[['value']]
+
+    if in_json:
+        return staff.to_json()
+    else:
+        return staff    

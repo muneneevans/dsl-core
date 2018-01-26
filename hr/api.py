@@ -35,3 +35,8 @@ class FacilityJobTypeView(ListAPIView):
     def get(self, request, **kwargs):
         response = staff.get_facility_job_type(kwargs['facility_id'], kwargs['job_type_id'], True)
         return HttpResponse(response)
+
+class WardFacilityStaffView(ListAPIView):
+    def get(self, request, **kwargs):
+        response = staff.get_ward_facility_number_of_staff(kwargs['ward_id'], True)
+        return HttpResponse(response)
