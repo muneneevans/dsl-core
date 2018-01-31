@@ -81,7 +81,24 @@ class WardIndicatorDataValues(ListAPIView):
             filters = request.data['filters']
             return JsonResponse({'filters':"empty"})
 
-
+class WardIndicatorFacilityDataValues(ListAPIView):
+     def post(self, request, **kwargs):
+        if request.data:
+            filters = request.data['filters']
+            required_filters = ['wardId', 'indicatorId', 'periodTypeId', 'year']
+            for r_filter in required_filters:
+                if not r_filter in filters.keys():                    
+                    return JsonResponse({'status':'bad request','message':"missing attribute: "+ r_filter}, status=400)
+            
+            response = datavalues.get_ward_facility_indicator_datavalues(filters['wardId'],filters['indicatorId'],filters['periodTypeId'],filters['year'])
+            
+            return JsonResponse({
+                    "datavalues":response})
+            
+        else:
+            print('using filters')
+            filters = request.data['filters']
+            return JsonResponse({'filters':"empty"})
 class CategoryOptionCombos(ListAPIView):
     def get(self, request):
         response = category_option_combos.get_all_category_option_combos(True)
