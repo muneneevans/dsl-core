@@ -37,7 +37,7 @@ def get_constituency_by_id(constituency_id, in_json=False):
 
 
     if in_json:
-        return all_constituencies.head(1).to_json()
+        return all_constituencies.head(1).to_json(orient="records")
     else:
         return all_constituencies.head(1)
 
