@@ -37,6 +37,11 @@ class CountyConstituencyList(generics.ListAPIView):
         # result = 'consituency list'
         return HttpResponse(result)
 
+class ConstituencyDetails(generics.ListAPIView):
+    def get(self, request, **kwargs):
+        response = constituencies.get_constituency_by_id(kwargs['constituency_id'], True)
+        return HttpResponse(response)
+
 class ConstituencyWardList(generics.ListAPIView):
     def get(self, request, **kwargs):
         result = wards.get_constituency_wards(kwargs['constituency_id'], True)
