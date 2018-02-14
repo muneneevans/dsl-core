@@ -48,6 +48,9 @@ datavalue_api_urls = [
     url(r'^constituency/indicator/$',
         ConstituencyIndicatorDataValues.as_view(),
         name='constituency-indicator-datavalues'),
+    url(r'^constituency/ward/indicator/$',
+        ConstituencyWardIndicatorDataValues.as_view(),
+        name='constituency-ward-indicator-datavalues'),
 ]
 
 periods_api_urls = [
