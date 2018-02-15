@@ -125,7 +125,7 @@ def get_ward_staff(ward_id, in_json=False):
     staff = pd.read_sql(query, connection.get_connection())
     staff['value'] = pd.to_numeric(staff['value'], downcast='float')
     staff = staff.groupby(['dataelementname']).sum()
-    
+
     if in_json:
         return staff.to_json()
     else:
@@ -144,6 +144,25 @@ def get_constituency_ward_number_of_staff(constituency_id, in_json=False):
     staff = pd.read_sql(query, connection.get_connection())
     staff['value'] = pd.to_numeric(staff['value'], downcast='float')
     staff = staff.groupby(['name']).sum()[['value']]
+
+    if in_json:
+        return staff.to_json()
+    else:
+        return staff
+
+
+def get_constituency_staff(constituency_id, in_json=False):
+    ''' Return a list of all staff in the facility'''
+    query = """ SELECT a.value, b.dataelementname, b.uid, c.name 
+                FROM fact_ihris_datavalue a, dim_ihris_dataelement b, facilities_facility c, common_ward d, common_constituency e
+                WHERE a.mflcode = c.code 
+                    AND a.dataelementid = b.uid
+                    and c.ward_id = d.id
+                    AND d.constituency_id = e.id
+                    AND e.id = '%s'""" % (constituency_id)
+    staff = pd.read_sql(query, connection.get_connection())
+    staff['value'] = pd.to_numeric(staff['value'], downcast='float')
+    staff = staff.groupby(['dataelementname']).sum()
 
     if in_json:
         return staff.to_json()

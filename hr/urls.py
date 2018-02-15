@@ -26,6 +26,9 @@ constituency_urls = [
     url(r'^(?P<constituency_id>[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89aAbB][a-f0-9]{3}-[a-f0-9]{12})/ward/numberofstaff/$',
         ConstituencyWardStaffView.as_view(),
         name='constituency-ward-staff'),
+    url(r'^(?P<constituency_id>[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89aAbB][a-f0-9]{3}-[a-f0-9]{12})/$',
+        ConstituencyStaffView.as_view(),
+        name='constituency-staff'),
 ]
 
 
