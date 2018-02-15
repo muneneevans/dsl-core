@@ -41,6 +41,11 @@ class WardFacilityStaffView(ListAPIView):
         response = staff.get_ward_facility_number_of_staff(kwargs['ward_id'], True)
         return HttpResponse(response)
 
+class WardStaffView(ListAPIView):
+    def get(self, request, **kwargs):
+        response = staff.get_ward_staff(kwargs['ward_id'], True)
+        return HttpResponse(response)
+        
 class ConstituencyWardStaffView(ListAPIView):
     def get(self, request, **kwargs):
         response = staff.get_constituency_ward_number_of_staff(kwargs['constituency_id'], True)
