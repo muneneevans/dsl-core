@@ -14,7 +14,7 @@ def get_facility_types_codes(in_json=False):
 
     for chunk in pd.read_sql('SELECT * FROM facilities_facilitytype', con=conn, chunksize=100):
         all_facility_types = all_facility_types.append(chunk)
-    
+
     all_facility_types = all_facility_types[['id','name']]
 
     if in_json:
@@ -29,9 +29,9 @@ def get_facility_keph_levels_codes(in_json=False):
     all_keph_levels = DataFrame()
     for chunk in pd.read_sql('SELECT * FROM facilities_kephlevel', con=conn, chunksize=100):
         all_keph_levels = all_keph_levels.append(chunk)
-    
+
     all_keph_levels = all_keph_levels[['id','name']]
-    
+
     if in_json:
         return all_keph_levels.to_json(orient='records')
     else:
@@ -61,12 +61,12 @@ def get_ward_facilities(ward_id, in_json=False, filters=None):
     query = "SELECT * FROM facilities_facility WHERE ward_id = '%s' ;" %(ward_id)
     for chunk in pd.read_sql(query, con=conn, chunksize=100):
         all_facilities = all_facilities.append(chunk)
-    
+
     if filters:
-        for key, value in filters.iteritems():            
+        for key, value in filters.iteritems():
             all_facilities = all_facilities[all_facilities[key] == value]
 
-       
+
     all_facilities['ward_name'] = ward['name'][0]
     all_facilities['constituency_name'] = constituency['name'][0]
     all_facilities['constituency_id'] = constituency['id'][0]
@@ -79,8 +79,8 @@ def get_ward_facilities(ward_id, in_json=False, filters=None):
     else:
         return all_facilities
 
-def get_ward_facility_type_summary(ward_id, in_json=False):   
-    conn = connection.get_connection()    
+def get_ward_facility_type_summary(ward_id, in_json=False):
+    conn = connection.get_connection()
     facility_types_query = '''SELECT COUNT(facilities_facility.id) as value, facilities_facilitytype.name  as facility_type_name
         FROM facilities_facility , common_ward , facilities_facilitytype 
         WHERE facilities_facility.ward_id = common_ward.id
@@ -95,7 +95,7 @@ def get_ward_facility_type_summary(ward_id, in_json=False):
     else:
         return all_facilities.to_json()
 
-def get_ward_keph_level_summary(ward_id, in_json=False):       
+def get_ward_keph_level_summary(ward_id, in_json=False):
     conn = connection.get_connection()
     all_facilities = pd.DataFrame()
     facility_types_query = '''SELECT COUNT(facilities_facility.id) as value, facilities_kephlevel.name  as  keph_level_name
@@ -106,7 +106,7 @@ def get_ward_keph_level_summary(ward_id, in_json=False):
             GROUP BY (facilities_kephlevel.name)'''%(ward_id)
     all_facilities = pd.read_sql(facility_types_query, con=conn)
     all_facilities = all_facilities.set_index('keph_level_name')
-    
+
     if in_json:
         return all_facilities.to_json()
     else:
@@ -120,7 +120,7 @@ def get_ward_summary(ward_id, in_json=False):
     ward_facilities['number_of_facilities'] = 1
     ward_summary = ward_facilities.groupby(['id','name'], as_index=False).sum()[
         ['number_of_beds','number_of_cots','number_of_facilities','id','name']]
-    
+
     if in_json:
         return ward_summary.to_json(orient='records')
     else:
@@ -134,12 +134,12 @@ def get_constituency_facilities(constituency_id, in_json=False, filters=None):
     constituency = constituencies.get_constituency_by_id(constituency_id)
 
     #get all the wards for the constituency
-    all_wards = wards.get_constituency_wards(constituency_id) 
-    
+    all_wards = wards.get_constituency_wards(constituency_id)
+
     all_facilities = DataFrame()
     for index, ward in all_wards.iterrows():
         all_facilities = all_facilities.append(get_ward_facilities(ward['id'],filters=filters))
-             
+
 
     if in_json:
         return all_facilities.to_json(orient='records')
@@ -150,20 +150,20 @@ def get_constituency_facilities(constituency_id, in_json=False, filters=None):
 def get_county_facilities(county_id, in_json=False):
     conn = connection.get_connection()
     county = counties.get_county_code_by_id(county_id)
-    
+
     #get constituencies in the county
     county_constituencies = constituencies.get_county_constituency_codes(county_id)
     county_constituencies = county_constituencies.rename(index=str, columns={'id':'constituency_id', 'name': "constituency_name"})
-    
+
     #get all the wards for the county
     all_wards = DataFrame()
-    for index, constituency in county_constituencies.iterrows():        
-        all_wards = all_wards.append(wards.get_constituency_wards(constituency['constituency_id']) )    
-    
+    for index, constituency in county_constituencies.iterrows():
+        all_wards = all_wards.append(wards.get_constituency_wards(constituency['constituency_id']) )
+
     all_facilities = DataFrame()
     for index, ward in all_wards.iterrows():
         all_facilities = all_facilities.append(get_ward_facilities(ward['id']))
-            
+
     all_facilities['county_name'] = county['name']
     all_facilities['county_id'] = county['id']
 
@@ -177,12 +177,12 @@ def get_county_facilities(county_id, in_json=False):
 def get_constituency_summary(constituency_id, in_json=False):
     '''return a summary of beds and cots per county'''
     constituency_facilities = get_constituency_facilities(constituency_id)
-    
+
     constituency_facilities['number_of_facilities'] = 1
     constituency_summary = constituency_facilities.groupby(['ward_id','ward_name'],as_index=False).sum()[
         ['number_of_beds','number_of_cots','number_of_facilities','ward_id','ward_name']]
 
-    
+
     if in_json:
         return constituency_summary.to_json(orient='records')
     else:
@@ -201,7 +201,7 @@ def get_county_summary(county_id,in_json=False):
             AND common_county.id = '%s'
         GROUP BY(common_constituency.name)'''%(county_id)
     country_summary = pd.read_sql(query, con=conn)
-    
+
 
     if in_json:
         return country_summary.to_json(orient='records')
@@ -220,7 +220,7 @@ def get_county_facility_type_summary(county_id, in_json=False):
             AND common_constituency.county_id = common_county.id
             AND common_county.id = '%s' '''%(county_id)
     all_facilities = pd.read_sql(facility_types_query, con=conn).groupby(['constituency_name','facility_type_name']).count().unstack().T.fillna(0).xs('count', axis=0, drop_level=True).T
-    
+
     if in_json:
         return all_facilities.to_json(orient='table')
     else:
@@ -237,7 +237,7 @@ def get_county_keph_level_summary(county_id, in_json=False):
             AND common_constituency.county_id = common_county.id
             AND common_county.id = '%s' '''%(county_id)
     all_facilities = pd.read_sql(facility_types_query, con=conn).groupby(['constituency_name','keph_level_name']).count().unstack().T.fillna(0).xs('count', axis=0, drop_level=True).T
-    
+
     if in_json:
         return all_facilities.to_json(orient='table')
     else:
@@ -254,7 +254,7 @@ def get_country_summary(in_json=False):
             AND common_constituency.county_id = common_county.id
         GROUP BY(common_county.id)'''
     country_summary = pd.read_sql(query, con=conn)
-    
+
     all_counties = counties.get_all_counties()
     response = pd.merge(country_summary,all_counties, left_on='county_id', right_on='id')
 
@@ -275,8 +275,8 @@ def get_country_facility_type_summary(in_json=False):
             AND facilities_facilitytype.id = facilities_facility.facility_type_id
             AND common_constituency.county_id = common_county.id'''
     all_facility_types = pd.read_sql(facility_types_query, con=conn).groupby(['county_name','facility_type_name']).count().unstack().T.fillna(0).xs('count', axis=0, drop_level=True).T
-    
-    
+
+
     if in_json:
         return all_facility_types.to_json(orient='table')
     else:
@@ -294,14 +294,14 @@ def get_country_keph_level_summary(in_json=False):
             AND facilities_kephlevel.id = facilities_facility.keph_level_id
             AND common_constituency.county_id = common_county.id'''
     country_summary = pd.read_sql(facility_types_query, con=conn).groupby(['county_name','keph_level_name']).count().unstack().T.fillna(0).xs('count', axis=0, drop_level=True).T
-    
+
     if in_json:
         return country_summary.to_json(orient='table')
     else:
         return country_summary
 
 #get country beds summary
-def get_country_beds_summary(in_json=False):    
+def get_country_beds_summary(in_json=False):
     conn = connection.get_connection()
     country_summary = pd.DataFrame()
     facility_types_query = '''SELECT facilities_facility.number_of_beds as total, common_county.name AS county_name
@@ -310,7 +310,7 @@ def get_country_beds_summary(in_json=False):
             AND common_ward.constituency_id = common_constituency.id            
             AND common_constituency.county_id = common_county.id'''
     country_summary = pd.read_sql(facility_types_query, con=conn).groupby(['county_name']).sum().unstack().T.fillna(0).xs('total', axis=0, drop_level=True).T
-    
+
     if in_json:
         return country_summary.to_json()
     else:
@@ -321,7 +321,7 @@ def get_facility_by_id(facility_id, in_json=False):
     '''returns a facility matching the facility id '''
     conn = connection.get_connection()
     all_facilities = pd.DataFrame()
-    query = "SELECT * FROM facilities_facility WHERE id = '%s' ;" %(facility_id)    
+    query = "SELECT * FROM facilities_facility WHERE id = '%s' ;" %(facility_id)
     for chunk in pd.read_sql(query, con=conn, chunksize=10000):
         all_facilities = all_facilities.append(chunk)
 
@@ -331,3 +331,24 @@ def get_facility_by_id(facility_id, in_json=False):
         return facility.to_json(orient='records')
     else:
         return facility
+
+
+def get_constituency_detailed_summary(constituency_id, in_json=False):
+    conn = connection.get_connection()
+    all_facilities = pd.DataFrame()
+    facility_types_query = '''SELECT COUNT(facilities_facility.id) as value, facilities_facilitytype.name  as facility_type_name
+        FROM facilities_facility , common_ward , facilities_facilitytype , common_constituency
+        WHERE facilities_facility.ward_id = common_ward.id
+            AND facilities_facilitytype.id = facilities_facility.facility_type_id
+            AND common_ward.constituency_id = common_constituency.id
+            AND common_constituency.id = '%s' 
+            GROUP BY (facilities_facilitytype.name)''' % (constituency_id)
+    all_facilities = pd.read_sql(facility_types_query, con=conn)
+    all_facilities = all_facilities.set_index('facility_type_name')
+
+    if in_json:
+        return all_facilities.to_json()
+    else:
+        return all_facilities
+
+

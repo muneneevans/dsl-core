@@ -18,6 +18,12 @@ ward_urls =[
 
 ]
 
+constituency_urls = [
+    url(r'^(?P<constituency_id>[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89aAbB][a-f0-9]{3}-[a-f0-9]{12})/ward/numberofstaff/$',
+        ConstituencyWardStaffView.as_view(),
+        name='constituency-ward-staff'),
+]
+
 
 facility_urls =[
     url(r'^(?P<facility_id>[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89aAbB][a-f0-9]{3}-[a-f0-9]{12})/$',FacilityStaffView.as_view(), name='facility-staff'),
@@ -28,6 +34,7 @@ api_urls=[
     url(r'^staff/', include(staff_urls)),
     url(r'^country/', include(country_urls)),
     url(r'^wards/', include(ward_urls)),
+    url(r'^constituencies/', include(constituency_urls)),
     url(r'^facility/', include(facility_urls)),
 ]
 
