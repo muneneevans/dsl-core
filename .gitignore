@@ -1,2 +1,7 @@
 *.pyc
 !spec/*.pyc
+
+npm-debug.log
+
+.vscode
+boa/settings.py
