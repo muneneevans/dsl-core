@@ -87,12 +87,21 @@ WSGI_APPLICATION = 'boa.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'boa_db',
-        'USER': 'boa_user',
-        'PASSWORD': '89381e01-4649-416d-8977-3e85628f9b69',
+        'NAME': 'dsl_db',
+        'USER': 'dsl_user',
+        'PASSWORD': 'dsl_password',
         'HOST': 'localhost',
         'PORT': '',
     }
+}
+
+DW_DATABASE = {
+    "database": "mohdsl",
+    "schema": "public",
+    "user": "dsl",
+    "host": "41.89.93.180",
+    "port": "5432",
+    "passw": "dsl2017"
 }
 
 # Password validation
